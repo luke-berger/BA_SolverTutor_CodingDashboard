@@ -1,4 +1,5 @@
 import React from 'react';
+import pythonIcon from '../../assets/python-icon.png';
 
 interface EditorHeaderProps {
   filename: string;
@@ -6,9 +7,9 @@ interface EditorHeaderProps {
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({ filename }) => {
   return (
-    <div className="flex h-10 shrink-0 items-center border-b border-gray-800 bg-[#252526] px-4 text-sm text-gray-400">
-      <span className="mr-2 text-yellow-400">-</span>
-      <span>{filename}</span>
+    <div className="flex h-10 shrink-0 items-center border-b border-gray-800 bg-[#252526] px-4 text-lg text-gray-400">
+      <img src={pythonIcon} alt="Python Icon" className="mr-2 h-5 w-5" />
+      <span className="font-bold">{filename}</span>
     </div>
   );
 };
