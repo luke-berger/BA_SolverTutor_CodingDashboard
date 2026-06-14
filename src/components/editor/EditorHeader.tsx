@@ -7,7 +7,7 @@ interface EditorHeaderProps {
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({ filename }) => {
   return (
-    <div className="flex h-10 shrink-0 items-center border-b border-gray-800 bg-[#252526] px-4 text-lg text-gray-400">
+    <div className="flex h-12 shrink-0 items-center bg-[#1F201F] px-4 text-lg text-[#DEDEDE]">
       <img src={pythonIcon} alt="Python Icon" className="mr-2 h-5 w-5" />
       <span className="font-bold">{filename}</span>
     </div>
