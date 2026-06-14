@@ -1,1 +1,8 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-monokai-bgI: #1f201f;
+  --color-monokai-bgII: #272822;
+  --color-monokai-highlight: #414338;
+  --color-monokai-text: #dedede;
+}
