@@ -4,9 +4,11 @@ import { Play, RotateCcw } from 'lucide-react';
 
 interface EditorHeaderProps {
   filename: string;
+  onRun?: () => void;
+  isLoading?: boolean;
 }
 
-const EditorHeader: React.FC<EditorHeaderProps> = ({ filename }) => {
+const EditorHeader: React.FC<EditorHeaderProps> = ({ filename, onRun, isLoading = false }) => {
   return (
     <div className="bg-monokai-bgI text-monokai-text flex shrink-0 items-center justify-between py-2 pr-2 pl-4 text-lg">
       <div className="flex items-center gap-2">
@@ -17,9 +19,10 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ filename }) => {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={() => alert('Run code functionality not implemented yet')}
+          onClick={onRun}
+          disabled={isLoading}
           aria-label="Run program"
-          className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50"
+          className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Play size={22} fill="currentColor" />
         </button>
