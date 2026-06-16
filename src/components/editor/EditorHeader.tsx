@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import pythonIcon from '../../assets/python-icon.png';
 import { Play, RotateCcw } from 'lucide-react';
+import ResetModal from '../modals/ResetModal';
 
 interface EditorHeaderProps {
   filename: string;
   onRun?: () => void;
+  onReset?: () => void;
   isLoading?: boolean;
 }
 
-const EditorHeader: React.FC<EditorHeaderProps> = ({ filename, onRun, isLoading = false }) => {
+const EditorHeader: React.FC<EditorHeaderProps> = ({
+  filename,
+  onRun,
+  onReset,
+  isLoading = false,
+}) => {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  const handleConfirmReset = () => {
+    if (onReset) onReset();
+    setShowResetConfirm(false);
+  };
+
   return (
     <div className="bg-monokai-bgI text-monokai-text flex shrink-0 items-center justify-between py-2 pr-2 pl-4 text-lg">
       <div className="flex items-center gap-2">
@@ -27,14 +41,23 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ filename, onRun, isLoading 
           <Play size={22} fill="currentColor" />
         </button>
 
-        <button
-          type="button"
-          onClick={() => alert('Reset code functionality not implemented yet')}
-          aria-label="Reset code"
-          className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50"
-        >
-          <RotateCcw size={24} strokeWidth={3} />
-        </button>
+        {/* Modal wrapper */}
+        <div className="relative flex items-center">
+          <button
+            type="button"
+            onClick={() => setShowResetConfirm(true)}
+            aria-label="Reset code"
+            className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50"
+          >
+            <RotateCcw size={24} strokeWidth={3} />
+          </button>
+
+          <ResetModal
+            isOpen={showResetConfirm}
+            onCancel={() => setShowResetConfirm(false)}
+            onConfirm={handleConfirmReset}
+          />
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ const Terminal: React.FC<TerminalProps> = ({ output = '' }) => {
         &gt; Output
       </div>
       <div className="bg-monokai-bgII text-monokai-text flex h-full flex-col overflow-auto rounded border-2 border-dashed border-gray-800 p-2 font-mono text-sm whitespace-pre-wrap">
-        {output || '[ Terminal Output Area ]'}
+        {output}
       </div>
     </div>
   );

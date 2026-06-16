@@ -8,11 +8,7 @@ interface CodeEditorProps {
   onChange?: (code: string) => void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({
-  theme = MONOKAI_THEME,
-  code = '# Write your code here\nprint("Hello, World!")',
-  onChange,
-}) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ theme = MONOKAI_THEME, code = '', onChange }) => {
   return (
     <div className="bg-monokai-bgII flex flex-1 flex-col pt-2">
       <Editor
@@ -23,7 +19,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         beforeMount={registerMonacoThemes}
         theme={theme}
         options={{
-          minimap: { enabled: false },
+          minimap: { enabled: true },
           fontSize: 14,
           fontFamily: 'Fira Code, monospace',
         }}

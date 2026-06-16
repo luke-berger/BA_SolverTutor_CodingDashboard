@@ -102,95 +102,85 @@ app.post('/api/execute', (req, res) => {
 });
 
 /**
- * Run task tests with modified code
+ * Run task tests with modified code (2-Stage: Syntax Check -> Pytest)
  * POST /api/run-task
- * Body: { taskCode: string, testCode: string, taskFilename: string, timeout?: number }
  */
 app.post('/api/run-task', (req, res) => {
   const { taskCode, testCode, taskFilename = 'task1_bug.py', timeout = 10000 } = req.body;
 
   if (!taskCode || !testCode) {
-    return res.status(400).json({
-      success: false,
-      error: 'Both taskCode and testCode are required',
-    });
+    return res
+      .status(400)
+      .json({ success: false, error: 'Both taskCode and testCode are required' });
   }
 
   const tempSubdir = path.join(tempDir, `run_${Date.now()}`);
 
   try {
-    // Create temp subdirectory for this run
     if (!fs.existsSync(tempSubdir)) {
       fs.mkdirSync(tempSubdir, { recursive: true });
     }
 
-    // Write task code file
     const taskFile = path.join(tempSubdir, taskFilename);
     fs.writeFileSync(taskFile, taskCode);
 
-    // Write test file
     const testFile = path.join(tempSubdir, 'test_task.py');
     fs.writeFileSync(testFile, testCode);
 
-    // Run pytest with output
+    // stage 1: syntax check
     execFile(
-      pytestExecutable,
-      [testFile, '-v', '--tb=no'], // Add --tb=no so output doesn't show hints about what the error is
-      { timeout, maxBuffer: 10 * 1024 * 1024, cwd: tempSubdir },
-      (error, stdout, stderr) => {
-        // Clean up temp directory
-        try {
-          fs.rmSync(tempSubdir, { recursive: true });
-        } catch (e) {
-          console.error('Failed to delete temp directory:', e);
-        }
-
-        if (error) {
-          if (error.killed) {
-            return res.json({
-              success: false,
-              error: `Test timeout (exceeded ${timeout}ms)`,
-              stdout: stdout || '',
-              stderr: stderr || '',
-            });
-          }
-
-          // Pytest exit code 1 =>tests failed but pytest ran successfully
-          if (error.code === 1) {
-            return res.json({
-              success: false,
-              testsFailed: true,
-              stdout: stdout || '',
-              stderr: stderr || '',
-            });
-          }
+      pythonExecutable,
+      ['-m', 'py_compile', taskFile],
+      { cwd: tempSubdir },
+      (syntaxErr, syntaxStdout, syntaxStderr) => {
+        // if syntax error, return immediately without running tests
+        if (syntaxErr) {
+          try {
+            fs.rmSync(tempSubdir, { recursive: true });
+          } catch (e) {}
 
           return res.json({
             success: false,
-            error: error.message || 'Test execution error',
-            stdout: stdout || '',
-            stderr: stderr || error.message,
+            error: 'Syntax Error',
+            // Python writes syntax errors to stderr
+            stderr: syntaxStderr || syntaxErr.message,
           });
         }
 
-        res.json({
-          success: true,
-          stdout: stdout || '',
-          stderr: stderr || '',
-        });
+        // stage 2: pytest
+        execFile(
+          pytestExecutable,
+          [testFile, '-v', '--tb=no'],
+          { timeout, maxBuffer: 10 * 1024 * 1024, cwd: tempSubdir },
+          (testErr, testStdout, testStderr) => {
+            try {
+              fs.rmSync(tempSubdir, { recursive: true });
+            } catch (e) {}
+
+            if (testErr) {
+              if (testErr.killed) {
+                return res.json({ success: false, error: `Test timeout (exceeded ${timeout}ms)` });
+              }
+              if (testErr.code === 1) {
+                return res.json({ success: false, testsFailed: true, stdout: testStdout });
+              }
+              return res.json({
+                success: false,
+                error: 'Test execution error',
+                stderr: testStderr || testErr.message,
+              });
+            }
+
+            res.json({ success: true, stdout: testStdout });
+          }
+        );
       }
     );
   } catch (error) {
     try {
       fs.rmSync(tempSubdir, { recursive: true });
-    } catch (e) {
-      console.error('Failed to delete temp directory:', e);
-    }
-
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Server error',
-    });
+    } catch (e) {}
+    res.status(500).json({ success: false, error: error.message || 'Server error' });
   }
 });
 
