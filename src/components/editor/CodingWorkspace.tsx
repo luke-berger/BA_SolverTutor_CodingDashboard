@@ -9,7 +9,8 @@ interface CodingWorkspaceProps {
 }
 
 const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme }) => {
-  const { code, setCode, output, isLoading, handleRun, handleReset } = useCodeExecution();
+  const { code, setCode, output, isLoading, handleRun, handleReset, showSuccess } =
+    useCodeExecution();
 
   return (
     <div className="flex w-2/3 flex-col">
@@ -18,6 +19,7 @@ const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme }) => {
         onRun={handleRun}
         onReset={handleReset}
         isLoading={isLoading}
+        showSuccess={showSuccess}
       />
       <CodeEditor theme={theme} code={code} onChange={setCode} />
       <Terminal output={output} />

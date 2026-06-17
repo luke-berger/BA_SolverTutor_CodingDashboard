@@ -22,6 +22,7 @@ export const useCodeExecution = () => {
   const [code, setCode] = useState(initialBugCode);
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleRun = async () => {
     setIsLoading(true);
@@ -33,6 +34,9 @@ export const useCodeExecution = () => {
       let rawOutput = '';
       if (response.success) {
         rawOutput = response.stdout || 'All tests passed!';
+        setTimeout(() => {
+          setShowSuccess(true);
+        }, 10);
       } else if (response.testsFailed) {
         rawOutput = response.stdout || `Error: ${response.error}`;
       } else {
@@ -53,5 +57,5 @@ export const useCodeExecution = () => {
     setOutput('Code has been reset to initial state.');
   };
 
-  return { code, setCode, output, isLoading, handleRun, handleReset };
+  return { code, setCode, output, isLoading, handleRun, handleReset, showSuccess };
 };

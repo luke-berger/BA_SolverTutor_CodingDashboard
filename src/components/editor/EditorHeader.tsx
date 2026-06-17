@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import pythonIcon from '../../assets/python-icon.png';
 import { Play, RotateCcw } from 'lucide-react';
 import ResetModal from '../modals/ResetModal';
+import SuccessModal from '../modals/SuccessModal';
 
 interface EditorHeaderProps {
   filename: string;
   onRun?: () => void;
   onReset?: () => void;
   isLoading?: boolean;
+  showSuccess?: boolean;
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({
@@ -15,6 +17,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
   onRun,
   onReset,
   isLoading = false,
+  showSuccess,
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
@@ -41,7 +44,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           <Play size={22} fill="currentColor" />
         </button>
 
-        {/* Modal wrapper */}
+        {/* ResetModal wrapper*/}
         <div className="relative flex items-center">
           <button
             type="button"
@@ -57,6 +60,12 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
             onCancel={() => setShowResetConfirm(false)}
             onConfirm={handleConfirmReset}
           />
+        </div>
+        {/* SuccessModal wrapper */}
+        <div className="">
+          <SuccessModal isOpen={showSuccess || false} onConfirm={() => showSuccess} />
+          {/* // onConfirm
+          will later be used to switch to the survey page. */}
         </div>
       </div>
     </div>
