@@ -5,6 +5,21 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
+const Database = require('better-sqlite3');
+const db = new Database('experiment_data.db');
+
+db.exec(`CREATE TABLE IF NOT EXISTS participants (
+  survey_id TEXT PRIMARY KEY,
+  experiment_group TEXT,
+  task1_time_sec INTEGER,
+  task1_compiles INTEGER,
+  task1_resets INTEGER,
+  task1_ai_messages INTEGER,
+  task2_time_sec INTEGER,
+  task2_compiles INTEGER,
+  task2_resets INTEGER
+);`);
+
 const app = express();
 const PORT = 3001;
 
@@ -22,6 +37,57 @@ const tempDir = path.join(os.tmpdir(), 'solver-tutor-codes');
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
 }
+
+/**
+ * Log task 1 data
+ * POST /api/log-task1
+ */
+app.post('/api/log-task1', (req, res) => {
+  try {
+    const { surveyId, group, timeOnTask, compileCount, resetCount, aiMessageCount } = req.body;
+
+    const stmt = db.prepare(`
+      INSERT INTO participants (survey_id, experiment_group, task1_time_sec, task1_compiles, task1_resets, task1_ai_messages) 
+      VALUES (?, ?, ?, ?, ?, ?) 
+      ON CONFLICT(survey_id) DO UPDATE SET 
+        task1_time_sec = excluded.task1_time_sec, 
+        task1_compiles = excluded.task1_compiles, 
+        task1_resets = excluded.task1_resets, 
+        task1_ai_messages = excluded.task1_ai_messages
+    `);
+
+    stmt.run(surveyId, group, timeOnTask, compileCount, resetCount, aiMessageCount);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Database Error in /api/log-task1:', error);
+    res.status(500).json({ success: false, error: 'Failed to log Task 1 data' });
+  }
+});
+
+/**
+ * Log task 2 data
+ * POST /api/log-task2
+ */
+app.post('/api/log-task2', (req, res) => {
+  try {
+    const { surveyId, timeOnTask, compileCount, resetCount } = req.body;
+
+    const stmt = db.prepare(`
+      INSERT INTO participants (survey_id, task2_time_sec, task2_compiles, task2_resets) 
+      VALUES (?, ?, ?, ?) 
+      ON CONFLICT(survey_id) DO UPDATE SET 
+        task2_time_sec = excluded.task2_time_sec, 
+        task2_compiles = excluded.task2_compiles, 
+        task2_resets = excluded.task2_resets
+    `);
+
+    stmt.run(surveyId, timeOnTask, compileCount, resetCount);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Database Error in /api/log-task2:', error);
+    res.status(500).json({ success: false, error: 'Failed to log Task 2 data' });
+  }
+});
 
 /**
  * Execute Python code
