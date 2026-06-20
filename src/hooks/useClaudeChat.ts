@@ -1,12 +1,12 @@
 import { useState } from 'react';
+import type { ExperimentGroup } from './useExperimentGroup';
 
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
 }
-
-export const useClaudeChat = () => {
+export const useClaudeChat = (group: ExperimentGroup) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -30,8 +30,11 @@ export const useClaudeChat = () => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: '[placeholder]',
+
+        // placeholder content based on group
+        content: group === 'tutor' ? '[Tutor placeholder]' : '[Solver placeholder]',
       };
+
       setMessages((prev) => [...prev, aiMessage]);
       setIsLoading(false);
     }, 800);

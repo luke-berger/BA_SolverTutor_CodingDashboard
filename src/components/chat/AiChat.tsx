@@ -1,14 +1,18 @@
 import React, { useRef, useEffect } from 'react';
 import ClaudeIcon from '../../assets/claude-icon.png';
 import { useClaudeChat } from '../../hooks/useClaudeChat';
+import type { ExperimentGroup } from '../../hooks/useExperimentGroup';
 
-const AiChat: React.FC = () => {
-  const { messages, input, setInput, isLoading, sendMessage } = useClaudeChat();
+interface AiChatProps {
+  group: ExperimentGroup;
+}
+
+const AiChat: React.FC<AiChatProps> = ({ group }) => {
+  const { messages, input, setInput, isLoading, sendMessage } = useClaudeChat(group);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -22,7 +26,7 @@ const AiChat: React.FC = () => {
   };
 
   return (
-    <div className="bg-monokai-bgI flex w-1/3 flex-col">
+    <div className="bg-monokai-bgI flex w-1/3 flex-col border-l border-[#3E3E42]">
       {/* Chat Header */}
       <div className="text-monokai-text flex shrink-0 items-center px-4 py-2 text-sm font-semibold">
         <div className="flex flex-col">
@@ -30,7 +34,7 @@ const AiChat: React.FC = () => {
             <img src={ClaudeIcon} alt="AI Icon" className="mr-2 h-7 w-7" />
             <span className="font-serif text-2xl font-bold">Claude</span>
           </div>
-          <span className="text-monokai-text pt-3 text-sm font-bold underline decoration-gray-600 decoration-2 underline-offset-6">
+          <span className="text-monokai-text pt-3 text-sm font-bold uppercase underline decoration-gray-600 decoration-2 underline-offset-6">
             CHAT
           </span>
         </div>
@@ -47,9 +51,7 @@ const AiChat: React.FC = () => {
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-xs rounded-lg px-3 py-2 text-sm ${
-                  message.role === 'user' ? 'text-monokai-text' : 'text-monokai-text'
-                }`}
+                className={`max-w-xs rounded-lg px-3 py-2 text-sm ${message.role === 'user' ? 'text-monokai-text' : 'text-monokai-text'}`}
                 style={
                   message.role === 'user'
                     ? { backgroundColor: '#2F312F' }
