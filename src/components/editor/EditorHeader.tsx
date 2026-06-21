@@ -11,8 +11,6 @@ interface EditorHeaderProps {
   onReset?: () => void;
   isLoading?: boolean;
   showSuccess?: boolean;
-  group: string;
-  taskId: 1 | 2;
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({
@@ -21,11 +19,9 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
   onReset,
   isLoading = false,
   showSuccess,
-  group,
-  taskId,
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const { incrementRun, incrementReset, submitTelemetry } = useTelemetry(group, taskId);
+  const { incrementRun, incrementReset, submitTelemetry } = useTelemetry();
 
   const hasLoggedSuccess = useRef(false);
 

@@ -4,11 +4,12 @@ import CodingWorkspace from '../editor/CodingWorkspace';
 import AiChat from '../chat/AiChat';
 import { MONOKAI_THEME } from '../editor/monacoThemes';
 import { useExperimentGroup } from '../../hooks/useExperimentGroup';
+import { useUrlParams } from '../../hooks/useUrlParams';
 
 const DashboardLayout: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState(MONOKAI_THEME);
-
   const { group, resetExperiment } = useExperimentGroup();
+  const { taskId } = useUrlParams();
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#1F201F] text-white">
@@ -16,10 +17,10 @@ const DashboardLayout: React.FC = () => {
 
       {/* Split-Screen Container */}
       <div className="flex flex-1 overflow-hidden">
-        <CodingWorkspace theme={selectedTheme} group={group} />
+        <CodingWorkspace theme={selectedTheme} />
 
-        {/* Give group to AiChat */}
-        <AiChat group={group} />
+        {/* AiChat only in Task 1 */}
+        {taskId === 1 && <AiChat group={group} />}
       </div>
 
       {/* Dev-Tool Button just for testing . Delete later */}
@@ -27,7 +28,7 @@ const DashboardLayout: React.FC = () => {
         onClick={resetExperiment}
         className="absolute bottom-4 left-4 z-50 rounded bg-gray-700/50 px-3 py-1 text-xs text-white opacity-30 transition-opacity hover:opacity-100"
       >
-        Reset Group (Current: {group})
+        Reset Group (Current: {group}) | Task: {taskId}
       </button>
     </div>
   );

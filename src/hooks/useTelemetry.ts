@@ -1,4 +1,6 @@
 import { useRef, useCallback, useState } from 'react';
+import { useUrlParams } from './useUrlParams';
+import { useExperimentGroup } from './useExperimentGroup';
 
 // defines the shape of the telemetry data we want to send to the backend (group and aiMessageCount are optional because they are only relevant for Task 1)
 interface TelemetryPayload {
@@ -10,15 +12,9 @@ interface TelemetryPayload {
   aiMessageCount?: number;
 }
 
-export const useTelemetry = (group: string, taskId: 1 | 2) => {
-  const [surveyId] = useState<string>(() => {
-    let id = localStorage.getItem('survey_id');
-    if (!id) {
-      id = `Test-ID-${Math.floor(Math.random() * 10000)}`;
-      localStorage.setItem('survey_id', id);
-    }
-    return id;
-  });
+export const useTelemetry = () => {
+  const { surveyId, taskId } = useUrlParams();
+  const { group } = useExperimentGroup();
 
   const [startTime] = useState<number>(() => Date.now());
 
