@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import pythonIcon from '../../assets/python-icon.png';
 import { Play, RotateCcw } from 'lucide-react';
 import ResetModal from '../modals/ResetModal';
 import SuccessModal from '../modals/SuccessModal';
+import { useTelemetry } from '../../hooks/useTelemetry';
 
 interface EditorHeaderProps {
   filename: string;
@@ -10,6 +11,8 @@ interface EditorHeaderProps {
   onReset?: () => void;
   isLoading?: boolean;
   showSuccess?: boolean;
+  group: string;
+  taskId: 1 | 2;
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({
@@ -18,8 +21,21 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
   onReset,
   isLoading = false,
   showSuccess,
+  group,
+  taskId,
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const { incrementRun, incrementReset, submitTelemetry } = useTelemetry(group, taskId);
+
+  const hasLoggedSuccess = useRef(false);
+
+  // listening for showSuccess to become true, then submit telemetry data (only once)
+  useEffect(() => {
+    if (showSuccess && !hasLoggedSuccess.current) {
+      submitTelemetry();
+      hasLoggedSuccess.current = true;
+    }
+  }, [showSuccess, submitTelemetry]);
 
   const handleConfirmReset = () => {
     if (onReset) onReset();
@@ -33,10 +49,14 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
         <span className="text-2xl font-bold">{filename}</span>
       </div>
 
+      {/* RUN BUTTON */}
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={onRun}
+          onClick={() => {
+            onRun?.();
+            incrementRun();
+          }}
           disabled={isLoading}
           aria-label="Run program"
           className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50 disabled:cursor-not-allowed disabled:opacity-50"
@@ -44,8 +64,9 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           <Play size={22} fill="currentColor" />
         </button>
 
-        {/* ResetModal wrapper*/}
+        {/* RESETMODAL WRAPPER */}
         <div className="relative flex items-center">
+          {/* RESET BUTTON */}
           <button
             type="button"
             onClick={() => setShowResetConfirm(true)}
@@ -58,12 +79,21 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           <ResetModal
             isOpen={showResetConfirm}
             onCancel={() => setShowResetConfirm(false)}
-            onConfirm={handleConfirmReset}
+            onConfirm={() => {
+              handleConfirmReset();
+              incrementReset();
+            }}
           />
         </div>
-        {/* SuccessModal wrapper */}
+        {/* SUCCESS MODAL WRAPPER */}
         <div className="">
-          <SuccessModal isOpen={showSuccess || false} onConfirm={() => showSuccess} />
+          <SuccessModal
+            isOpen={showSuccess || false}
+            onConfirm={
+              () => showSuccess
+              // navigate to survey function here
+            }
+          />
           {/* // onConfirm
           will later be used to switch to the survey page. */}
         </div>

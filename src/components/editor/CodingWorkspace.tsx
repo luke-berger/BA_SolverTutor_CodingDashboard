@@ -6,9 +6,10 @@ import { useCodeExecution } from '../../hooks/useCodeExecution';
 
 interface CodingWorkspaceProps {
   theme: string;
+  group: string;
 }
 
-const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme }) => {
+const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme, group }) => {
   const { code, setCode, output, isLoading, handleRun, handleReset, showSuccess } =
     useCodeExecution();
 
@@ -20,6 +21,8 @@ const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme }) => {
         onReset={handleReset}
         isLoading={isLoading}
         showSuccess={showSuccess}
+        group={group}
+        taskId={1}
       />
       <CodeEditor theme={theme} code={code} onChange={setCode} />
       <Terminal output={output} />

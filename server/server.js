@@ -12,11 +12,11 @@ db.exec(`CREATE TABLE IF NOT EXISTS participants (
   survey_id TEXT PRIMARY KEY,
   experiment_group TEXT,
   task1_time_sec INTEGER,
-  task1_compiles INTEGER,
+  task1_runs INTEGER,
   task1_resets INTEGER,
   task1_ai_messages INTEGER,
   task2_time_sec INTEGER,
-  task2_compiles INTEGER,
+  task2_runs INTEGER,
   task2_resets INTEGER
 );`);
 
@@ -44,19 +44,19 @@ if (!fs.existsSync(tempDir)) {
  */
 app.post('/api/log-task1', (req, res) => {
   try {
-    const { surveyId, group, timeOnTask, compileCount, resetCount, aiMessageCount } = req.body;
+    const { surveyId, group, timeOnTask, runCount, resetCount, aiMessageCount } = req.body;
 
     const stmt = db.prepare(`
-      INSERT INTO participants (survey_id, experiment_group, task1_time_sec, task1_compiles, task1_resets, task1_ai_messages) 
+      INSERT INTO participants (survey_id, experiment_group, task1_time_sec, task1_runs, task1_resets, task1_ai_messages) 
       VALUES (?, ?, ?, ?, ?, ?) 
       ON CONFLICT(survey_id) DO UPDATE SET 
         task1_time_sec = excluded.task1_time_sec, 
-        task1_compiles = excluded.task1_compiles, 
+        task1_runs = excluded.task1_runs, 
         task1_resets = excluded.task1_resets, 
         task1_ai_messages = excluded.task1_ai_messages
     `);
 
-    stmt.run(surveyId, group, timeOnTask, compileCount, resetCount, aiMessageCount);
+    stmt.run(surveyId, group, timeOnTask, runCount, resetCount, aiMessageCount);
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error in /api/log-task1:', error);
@@ -70,18 +70,18 @@ app.post('/api/log-task1', (req, res) => {
  */
 app.post('/api/log-task2', (req, res) => {
   try {
-    const { surveyId, timeOnTask, compileCount, resetCount } = req.body;
+    const { surveyId, timeOnTask, runCount, resetCount } = req.body;
 
     const stmt = db.prepare(`
-      INSERT INTO participants (survey_id, task2_time_sec, task2_compiles, task2_resets) 
+      INSERT INTO participants (survey_id, task2_time_sec, task2_runs, task2_resets) 
       VALUES (?, ?, ?, ?) 
       ON CONFLICT(survey_id) DO UPDATE SET 
         task2_time_sec = excluded.task2_time_sec, 
-        task2_compiles = excluded.task2_compiles, 
+        task2_runs = excluded.task2_runs, 
         task2_resets = excluded.task2_resets
     `);
 
-    stmt.run(surveyId, timeOnTask, compileCount, resetCount);
+    stmt.run(surveyId, timeOnTask, runCount, resetCount);
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error in /api/log-task2:', error);
@@ -257,5 +257,18 @@ app.get('/health', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`SolverTutor Backend Server running on http://localhost:${PORT}`);
+  // ANSI Escape Codes for styling the console output
+  const reset = '\x1b[0m';
+  const bold = '\x1b[1m';
+  const cyan = '\x1b[36m';
+  const green = '\x1b[32m';
+  const dim = '\x1b[2m';
+
+  console.log('\n');
+  console.log(`  ${bold}${cyan}SOLVERTUTOR BACKEND${reset}  ${green}ready${reset}`);
+  console.log();
+  console.log(
+    `  ${green}➜${reset}  ${bold}Local:${reset}   ${cyan}http://localhost:${PORT}${reset}`
+  );
+  console.log('\n');
 });

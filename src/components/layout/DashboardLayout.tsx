@@ -16,13 +16,13 @@ const DashboardLayout: React.FC = () => {
 
       {/* Split-Screen Container */}
       <div className="flex flex-1 overflow-hidden">
-        <CodingWorkspace theme={selectedTheme} />
+        <CodingWorkspace theme={selectedTheme} group={group} />
 
         {/* Give group to AiChat */}
         <AiChat group={group} />
       </div>
 
-      {/* Dev-Tool Button just for testing . Delete later*/}
+      {/* Dev-Tool Button just for testing . Delete later */}
       <button
         onClick={resetExperiment}
         className="absolute bottom-4 left-4 z-50 rounded bg-gray-700/50 px-3 py-1 text-xs text-white opacity-30 transition-opacity hover:opacity-100"

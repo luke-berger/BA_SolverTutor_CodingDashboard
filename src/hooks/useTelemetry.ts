@@ -4,7 +4,7 @@ import { useRef, useCallback, useState } from 'react';
 interface TelemetryPayload {
   surveyId: string;
   timeOnTask: number;
-  compileCount: number;
+  runCount: number;
   resetCount: number;
   group?: string;
   aiMessageCount?: number;
@@ -22,14 +22,14 @@ export const useTelemetry = (group: string, taskId: 1 | 2) => {
 
   const [startTime] = useState<number>(() => Date.now());
 
-  const compileCount = useRef<number>(0);
+  const runCount = useRef<number>(0);
   const resetCount = useRef<number>(0);
   const aiMessageCount = useRef<number>(0);
 
   // Increment functions to track user interactions
-  const incrementCompile = useCallback(() => {
-    compileCount.current += 1;
-    console.log('Telemetry: Compile', compileCount.current);
+  const incrementRun = useCallback(() => {
+    runCount.current += 1;
+    console.log('Telemetry: Run', runCount.current);
   }, []);
 
   const incrementReset = useCallback(() => {
@@ -49,7 +49,7 @@ export const useTelemetry = (group: string, taskId: 1 | 2) => {
     const payload: TelemetryPayload = {
       surveyId,
       timeOnTask: timeOnTaskSec,
-      compileCount: compileCount.current,
+      runCount: runCount.current,
       resetCount: resetCount.current,
     };
 
@@ -59,7 +59,8 @@ export const useTelemetry = (group: string, taskId: 1 | 2) => {
       payload.aiMessageCount = aiMessageCount.current;
     }
 
-    const endpoint = taskId === 1 ? '/api/log-task1' : '/api/log-task2';
+    const endpoint =
+      taskId === 1 ? 'http://localhost:3001/api/log-task1' : 'http://localhost:3001/api/log-task2';
     console.log(`sending telemetry from task ${taskId}...`, payload);
 
     try {
@@ -77,7 +78,7 @@ export const useTelemetry = (group: string, taskId: 1 | 2) => {
   };
 
   return {
-    incrementCompile,
+    incrementRun,
     incrementReset,
     incrementAiMessage,
     submitTelemetry,
