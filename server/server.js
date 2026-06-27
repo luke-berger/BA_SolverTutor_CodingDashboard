@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { getClaudeResponse } = require('./services/aiService');
 
 const Database = require('better-sqlite3');
 const db = new Database('experiment_data.db');
@@ -37,6 +39,30 @@ const tempDir = path.join(os.tmpdir(), 'solver-tutor-codes');
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
 }
+
+/**
+ * Chat Route
+ * POST /api/chat
+ */
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages, group, currentCode } = req.body;
+
+    // security check: see if frontend everything
+    if (!messages || !group) {
+      return res.status(400).json({ error: 'Messages and Group are required' });
+    }
+
+    // pass work to backend service to get response from Anthropic API
+    const reply = await getClaudeResponse(messages, group, currentCode);
+
+    // return the AI's reply to the frontend
+    res.json({ success: true, reply });
+  } catch (error) {
+    console.error('Chat Route Error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch AI response' });
+  }
+});
 
 /**
  * Log task 1 data
