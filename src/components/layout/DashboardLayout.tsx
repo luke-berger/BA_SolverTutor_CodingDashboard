@@ -10,6 +10,7 @@ const DashboardLayout: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState(MONOKAI_THEME);
   const { group, resetExperiment } = useExperimentGroup();
   const { taskId } = useUrlParams();
+  const [currentCode, setCurrentCode] = useState('');
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#1F201F] text-white">
@@ -17,10 +18,10 @@ const DashboardLayout: React.FC = () => {
 
       {/* Split-Screen Container */}
       <div className="flex flex-1 overflow-hidden">
-        <CodingWorkspace theme={selectedTheme} />
+        <CodingWorkspace theme={selectedTheme} onCodeChange={setCurrentCode} />
 
         {/* AiChat only in Task 1 */}
-        {taskId === 1 && <AiChat group={group} />}
+        {taskId === 1 && <AiChat group={group} currentCode={currentCode} />}
       </div>
 
       {/* Dev-Tool Button just for testing . Delete later */}

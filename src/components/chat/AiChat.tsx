@@ -5,10 +5,11 @@ import type { ExperimentGroup } from '../../hooks/useExperimentGroup';
 
 interface AiChatProps {
   group: ExperimentGroup;
+  currentCode: string;
 }
 
-const AiChat: React.FC<AiChatProps> = ({ group }) => {
-  const { messages, input, setInput, isLoading, sendMessage } = useClaudeChat(group);
+const AiChat: React.FC<AiChatProps> = ({ group, currentCode }) => {
+  const { messages, input, setInput, isLoading, sendMessage } = useClaudeChat(group, currentCode);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

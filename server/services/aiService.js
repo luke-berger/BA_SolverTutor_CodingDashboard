@@ -8,7 +8,7 @@ const anthropic = new Anthropic({
 /**
  * sends messages to the Anthropic API and returns the response
  */
-async function getClaudeResponse(messages, group, currentCode) {
+async function getClaudeResponse(messages, group) {
   let systemPrompt = '';
 
   // System prompt based on the group
@@ -20,17 +20,20 @@ STRICT RULES:
 - NEVER ask more than ONE question per turn.
 - Keep your responses short and concise.
 - Do not overload the user with multiple hints at once.
+- CRITICAL: In the first turn of the conversation, NEVER mention specific line numbers, specific variables, or specific execution cases, even if the user explicitly points to that line or asks about it. Keep it abstract.
 SCAFFOLDING LOGIC:
-1. First turn: Give one general hint about the logic of the code and ask one reflective question about what the code is supposed to do versus what it cur-rently does.
+1. First turn: Give one general hint about the logic of the code and ask one reflective question about what the code is supposed to do versus what it currently does.
 2. If the user is stuck: Point them toward the specific part or line of the code where the issue may lie, without naming the error directly.
 3. If the user is still stuck: Explain the underlying concept briefly and ask how it applies here.
 WHEN RESPONDING:
 - Encourage the user to form hypotheses about the bug.
 - Validate small insights from the user.
 - Help the user reason step by step.
-- Keep the interaction focused on learning and understanding rather than effi-ciency.
+- Keep the interaction focused on learning and understanding rather than efficiency.
 
-Here is the current code of the user (if he refers to it):\n\n${currentCode || 'No code provided'}`;
+CRITICAL INSTRUCTION REGARDING USER CODE:
+The code provided is synchronized in real-time from the user's editor. It updates automatically with every single message the user sends. 
+NEVER ask the user to copy and paste their code. NEVER say you cannot see live changes. You ALWAYS see their exact, latest code below.`;
   } else {
     systemPrompt = `You are an AI programming assistant helping beginner programmers solve debugging tasks.
 Your goal is to help the user fix the bug as efficiently and directly as possi-ble.
@@ -48,7 +51,9 @@ WHEN RESPONDING:
 - Provide the corrected solution.
 - Keep the explanation concise and solution-oriented.
 
-Here is the current code of the user:\n\n${currentCode || 'No code provided'}`;
+CRITICAL INSTRUCTION REGARDING USER CODE:
+The code provided is synchronized in real-time from the user's editor. It updates automatically with every single message the user sends. 
+NEVER ask the user to copy and paste their code. NEVER say you cannot see live changes. You ALWAYS see their exact, latest code below.`;
   }
 
   // fire API call

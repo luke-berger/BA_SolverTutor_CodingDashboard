@@ -46,7 +46,7 @@ if (!fs.existsSync(tempDir)) {
  */
 app.post('/api/chat', async (req, res) => {
   try {
-    const { messages, group, currentCode } = req.body;
+    const { messages, group } = req.body;
 
     // security check: see if frontend everything
     if (!messages || !group) {
@@ -54,7 +54,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
     // pass work to backend service to get response from Anthropic API
-    const reply = await getClaudeResponse(messages, group, currentCode);
+    const reply = await getClaudeResponse(messages, group);
 
     // return the AI's reply to the frontend
     res.json({ success: true, reply });
