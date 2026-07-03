@@ -23,13 +23,13 @@ const ResetModal: React.FC<ResetModalProps> = ({ isOpen, onConfirm, onCancel }) 
           onClick={onCancel}
           className="cursor-pointer text-red-400 transition-transform hover:scale-110 hover:text-red-200"
         >
-          <X size={24} />
+          <X className="h-6.5 w-6.5" />
         </button>
         <button
           onClick={onConfirm}
           className="cursor-pointer text-green-400 transition-transform hover:scale-110 hover:text-green-200"
         >
-          <Check size={24} />
+          <Check className="h-6.5 w-6.5" />
         </button>
       </div>
     </div>

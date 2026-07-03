@@ -57,7 +57,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           aria-label="Run program"
           className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <Play size={22} fill="currentColor" />
+          <Play className="h-6 w-6" fill="currentColor" />
         </button>
 
         {/* RESETMODAL WRAPPER */}
@@ -69,7 +69,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
             aria-label="Reset code"
             className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50"
           >
-            <RotateCcw size={24} strokeWidth={3} />
+            <RotateCcw className="h-6.5 w-6.5" strokeWidth={3} />
           </button>
 
           <ResetModal

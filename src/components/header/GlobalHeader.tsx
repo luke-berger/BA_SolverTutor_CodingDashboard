@@ -18,9 +18,9 @@ const GlobalHeader: React.FC<GlobalHeaderProps> = ({ selectedTheme, onThemeChang
     <header className="border-monokai-highlight bg-monokai-bgI flex h-10 shrink-0 items-center justify-between border-b px-4">
       <div className="text-lg font-bold text-gray-400"></div>
       <div className="border-monokai-highlight text-monokai-text/60 border border-dashed p-1 text-sm">
-        <Palette size={16} className="inline-block" />
+        <Palette className="inline-block h-4 w-4" />
         <select
-          className="text-monokai-text cursor-pointer bg-transparent font-mono text-sm"
+          className="text-monokai-text/70 cursor-pointer bg-transparent font-mono"
           value={selectedTheme}
           onChange={(e) => onThemeChange(e.target.value)}
         >
