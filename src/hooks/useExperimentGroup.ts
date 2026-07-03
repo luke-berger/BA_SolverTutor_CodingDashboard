@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 export type ExperimentGroup = 'tutor' | 'solver';
 
+// hook to manage experiment group assignment and reset functionality for testing purposes
 export const useExperimentGroup = () => {
   const [group] = useState<ExperimentGroup>(() => {
     const savedGroup = localStorage.getItem('experiment_group') as ExperimentGroup;

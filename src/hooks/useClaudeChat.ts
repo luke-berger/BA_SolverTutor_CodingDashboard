@@ -10,6 +10,7 @@ export interface Message {
   codeSnapshot?: string;
 }
 
+// hook to manage chat state and interactions with the AI backend
 export const useClaudeChat = (group: ExperimentGroup, currentCode: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');

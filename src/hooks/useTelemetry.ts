@@ -12,6 +12,7 @@ interface TelemetryPayload {
   aiMessageCount?: number;
 }
 
+// hook to manage telemetry data collection and submission
 export const useTelemetry = () => {
   const { surveyId, taskId } = useUrlParams();
   const { group } = useExperimentGroup();

@@ -3,6 +3,7 @@ import { runTaskTests } from '../services/codeExecution';
 import initialBugCode from '../data/programs/task_I_bug.py?raw';
 import backgroundTestCode from '../data/testcases/task_I_test.py?raw';
 
+// sanitize output to remove unnecessary details and make it more user-friendly
 const sanitizeOutput = (text: string) => {
   if (!text) return '';
   let clean = text;
@@ -18,6 +19,7 @@ const sanitizeOutput = (text: string) => {
   return clean.trim();
 };
 
+// hook to manage code execution state and interactions with the backend
 export const useCodeExecution = () => {
   const [code, setCode] = useState(initialBugCode);
   const [output, setOutput] = useState('');

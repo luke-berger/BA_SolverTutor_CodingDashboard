@@ -1,3 +1,4 @@
+// hook to extract and manage URL parameters for task and survey identification
 export const useUrlParams = () => {
   const queryParams = new URLSearchParams(window.location.search);
 

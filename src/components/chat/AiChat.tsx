@@ -1,6 +1,9 @@
 import React, { useRef, useEffect } from 'react';
+import { CornerDownLeft, Square } from 'lucide-react';
 import ClaudeIcon from '../../assets/claude-icon.png';
 import { useClaudeChat } from '../../hooks/useClaudeChat';
+import { TypingMarkdown } from './TypingMarkdown';
+import { useAutoResize } from '../../hooks/useAutoResize';
 import type { ExperimentGroup } from '../../hooks/useExperimentGroup';
 
 interface AiChatProps {
@@ -13,6 +16,9 @@ const AiChat: React.FC<AiChatProps> = ({ group, currentCode }) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // bind auto-resize functionality to the textarea ref
+  useAutoResize(textareaRef, input);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,63 +52,86 @@ const AiChat: React.FC<AiChatProps> = ({ group, currentCode }) => {
         {messages.length === 0 ? (
           <div className="text-monokai-text flex h-full items-center justify-center text-sm opacity-50"></div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+          messages.map((message, index) => {
+            const isLastMessage = index === messages.length - 1;
+            const shouldAnimate = message.role === 'assistant' && isLastMessage;
+
+            return (
               <div
-                className={`max-w-xs rounded-lg px-3 py-2 text-sm ${message.role === 'user' ? 'text-monokai-text' : 'text-monokai-text'}`}
-                style={
-                  message.role === 'user'
-                    ? { backgroundColor: '#2F312F' }
-                    : { backgroundColor: 'transparent' }
-                }
+                key={message.id}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.content}
+                <div
+                  className={`rounded-lg px-3 py-2 text-[clamp(14px,1vw,18px)] ${
+                    message.role === 'user'
+                      ? 'text-monokai-text max-w-[80%] bg-[#2F312F]'
+                      : 'text-monokai-text max-w-full bg-transparent'
+                  }`}
+                >
+                  {message.role === 'user' ? (
+                    <p>{message.content}</p>
+                  ) : (
+                    // animate assistant messages using TypingMarkdown
+                    <TypingMarkdown content={message.content} isTyping={shouldAnimate} />
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
+        {/* Loading indicator */}
         {isLoading && (
           <div className="flex justify-start">
-            <div
-              className="text-monokai-text rounded-lg px-3 py-2 text-2xl font-bold"
-              style={{ backgroundColor: 'transparent' }}
-            >
+            <div className="text-monokai-text rounded-lg bg-transparent px-3 py-2 text-2xl font-bold">
               <span className="inline-block animate-pulse">.</span>
-              <span className="ml-1 inline-block animate-pulse">.</span>
-              <span className="ml-1 inline-block animate-pulse">.</span>
+              <span className="ml-1 inline-block animate-pulse" style={{ animationDelay: '0.2s' }}>
+                .
+              </span>
+              <span className="ml-1 inline-block animate-pulse" style={{ animationDelay: '0.4s' }}>
+                .
+              </span>
             </div>
           </div>
         )}
+        {/* Scroll anchor */}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Chat Input */}
       <div className="px-4 pb-4">
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          disabled={isLoading}
-          placeholder="Ask Claude a question..."
-          className="text-monokai-text placeholder-monokai-text/50 w-full resize-none rounded-lg px-3 py-2 text-sm focus:outline-none disabled:opacity-50"
-          style={{
-            backgroundColor: '#414338',
-            boxShadow: 'none',
-            border: '2px solid transparent',
-            transition: 'border-color 0.2s',
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = '#7A807A';
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = 'transparent';
-          }}
-          rows={8}
-        />
+        {/* Container for textarea and toolbar */}
+        <div className="bg-monokai-highlight flex flex-col rounded-lg border-2 border-transparent transition-colors duration-200 focus-within:border-[#7A807A]">
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+            placeholder="Ask Claude a question..."
+            rows={1}
+            className="text-monokai-text placeholder-monokai-text/50 max-h-40 w-full resize-none overflow-y-auto bg-transparent px-3 pt-3 pb-1 text-[clamp(14px,1vw-8px,18px)] focus:outline-none disabled:opacity-50"
+          />
+
+          {/* Tool Bar */}
+          <div className="flex items-center justify-between px-2 pt-1 pb-1.5">
+            {/* Left side: Model name */}
+            <div className="text-monokai-text/40 px-2 font-mono text-[11px]"> Claude Haiku 4.5</div>
+
+            {/* Right side: visual indicator for status or visual hint to press enter */}
+            <div
+              className={`flex items-center justify-center p-1 ${
+                isLoading ? 'text-monokai-text/60 animate-pulse' : 'text-monokai-text/30'
+              }`}
+              title={isLoading ? 'Generating...' : 'Press Enter to send'}
+            >
+              {isLoading ? (
+                <Square className="h-3 w-3" fill="currentColor" strokeWidth={0} />
+              ) : (
+                <CornerDownLeft className="h-4 w-4" />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
