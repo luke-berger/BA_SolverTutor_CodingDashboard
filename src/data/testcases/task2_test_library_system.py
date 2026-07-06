@@ -5,7 +5,7 @@ Tests for the library branch system.
 from library_system import LibraryBranch
 
 
-def test_new_branch_can_check_out_a_book():
+def test_new_check_out():
     """Checking out a book at a branch should add it to that branch's list."""
     branch = LibraryBranch("Test Branch")
     branch.check_out("Introduction to Bookkeeping")
@@ -32,7 +32,7 @@ def test_older_branch_does_not_gain_books_from_a_newer_branch():
 
     assert "Advanced Dragon Taming" not in riverside.get_checked_out_books()
 
-def test_where_are_my_books():
+def test_who_stole_my_books():
     """A single branch should be able to check out multiple books without clearing its list."""
     branch = LibraryBranch("Central Branch")
     

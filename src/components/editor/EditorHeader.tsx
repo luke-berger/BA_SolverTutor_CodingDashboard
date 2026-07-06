@@ -49,13 +49,14 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
       <div className="flex items-center gap-2">
         <button
           type="button"
+          title="Run Code"
           onClick={() => {
             onRun?.();
             incrementRun();
           }}
           disabled={isLoading}
           aria-label="Run program"
-          className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md hover:brightness-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Play className="h-6 w-6" fill="currentColor" />
         </button>
@@ -65,9 +66,10 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           {/* RESET BUTTON */}
           <button
             type="button"
+            title="Reset Code"
             onClick={() => setShowResetConfirm(true)}
             aria-label="Reset code"
-            className="flex h-9 w-9 items-center justify-center rounded-md hover:brightness-50"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md hover:brightness-50"
           >
             <RotateCcw className="h-6.5 w-6.5" strokeWidth={3} />
           </button>

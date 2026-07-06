@@ -5,14 +5,14 @@ Tests for character creation.
 from character_creation import create_character
 
 
-def test_new_warrior_receives_an_iron_sword():
+def test_a_new_iron_sword():
     """A freshly created warrior should be equipped with an Iron Sword."""
     hero = create_character("Brynn", "Warrior")
     assert "Iron Sword" in hero["inventory"]
 
 
-def test_no_melee_weapons_for_new_mages():
-    """A mage should never end up carrying a warrior's sword."""
+def test_no_warrior_mages():
+    """A new mage should never end up carrying a warrior's sword."""
     warrior = create_character("Garrick", "Warrior")
     mage = create_character("Isolde", "Mage")
 
