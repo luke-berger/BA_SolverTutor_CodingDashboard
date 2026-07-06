@@ -31,19 +31,23 @@ export const useClaudeChat = (group: ExperimentGroup, currentCode: string) => {
       codeSnapshot: currentCode,
     };
 
+    // sliding window of the last 8 messages to keep context for the AI
+    const MAX_HISTORY = 12;
+    const recentMessages = [...messages, userMessage].slice(-MAX_HISTORY);
+
     // previous history for API-payload
-    const apiMessages = [...messages, userMessage].map((msg) => {
+    const apiMessages = recentMessages.map((msg) => {
       let apiContent = msg.content;
 
       // Attach code snapshot on user message
-      if (msg.role === 'user' && msg.codeSnapshot) {
+      if (msg.role === 'user' && msg.id === userMessage.id && msg.codeSnapshot) {
         // number the code so claude does not have problems with counting code lines and referring to a wrong line number
         const numberedCode = msg.codeSnapshot
           .split('\n')
           .map((line, index) => `${index + 1} | ${line}`)
           .join('\n');
 
-        apiContent = `${msg.content}\n\n[CODE SNAPSHOT AT THIS MOMENT]:\n${numberedCode}`;
+        apiContent = `${msg.content}\n\n[CURRENT CODE SNAPSHOT]:\n${numberedCode}`;
       }
 
       return {
