@@ -5,7 +5,7 @@ export const MONOKAI_THEME = 'monokai';
 export const GITHUB_DARK_DEFAULT_THEME = 'github-dark-default';
 export const ONE_DARK_PRO_THEME = 'one-dark-pro';
 export const DRACULA_THEME = 'dracula';
-export const ONE_DARK_THEME = 'one-dark';
+export const AYU_DARK_THEME = 'ayu-dark';
 
 type ThemePalette = {
   background: string;
@@ -128,22 +128,22 @@ const themes: Record<string, editor.IStandaloneThemeData> = {
     whitespace: '#FFFFFF1A',
   }),
 
-  [ONE_DARK_THEME]: createDarkTheme({
-    background: '#282C34',
-    foreground: '#ABB2BF',
-    comment: '#5C6370',
-    string: '#98C379',
-    number: '#D19A66',
-    keyword: '#C678DD',
-    typeName: '#E5C07B',
-    variable: '#E06C75',
-    functionName: '#61AFEF',
-    operator: '#C678DD',
-    lineNumber: '#636D83',
-    selection: '#3E4451',
-    lineHighlight: '#99BBFF0A',
-    cursor: '#528BFF',
-    whitespace: '#ABB2BF26',
+  [AYU_DARK_THEME]: createDarkTheme({
+    background: '#10141C',
+    foreground: '#BFBDB6',
+    comment: '#5A6673',
+    string: '#AAD94C',
+    number: '#D2A6FF',
+    keyword: '#FF8F40',
+    typeName: '#59C2FF',
+    variable: '#BFBDB6',
+    functionName: '#FFB454',
+    operator: '#F29668',
+    lineNumber: '#5A6378A6',
+    selection: '#3388FF40',
+    lineHighlight: '#161A24',
+    cursor: '#E6B450',
+    whitespace: '#5A6378A6',
   }),
 };
 

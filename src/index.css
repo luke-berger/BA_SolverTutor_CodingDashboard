@@ -1,18 +1,15 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-monokai-bgI: #1f201f;
-  --color-monokai-bgII: #272822;
-  --color-monokai-highlight: #414338;
-  --color-monokai-text: #dedede;
+  --color-bgI: #1f201f;
+  --color-bgII: #272822;
+  --color-highlight: #414338;
+  --color-text: #dedede;
+  --color-chat-bg: #2f312f;
 }
 
 @layer base {
   html {
-    /* 16px = minimum (for Laptops)
-      1.35vw - 20px = grows with viewport
-      42px = maximum (for 4K monitores)
-    */
     font-size: clamp(16px, 1.35vw - 20px, 42px);
   }
 }

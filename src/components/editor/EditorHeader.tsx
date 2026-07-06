@@ -39,7 +39,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
   };
 
   return (
-    <div className="bg-monokai-bgI text-monokai-text flex shrink-0 items-center justify-between py-2 pr-2 pl-4 text-lg">
+    <div className="bg-bgI text-text flex shrink-0 items-center justify-between py-2 pr-2 pl-4 text-lg">
       <div className="flex items-center gap-2">
         <img src={pythonIcon} alt="Python Icon" className="h-7 w-7" />
         <span className="text-2xl font-bold">{filename}</span>

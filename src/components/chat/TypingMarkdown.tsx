@@ -18,7 +18,7 @@ export const TypingMarkdown: React.FC<TypingMarkdownProps> = ({ content, isTypin
         // paragraph styling
         p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
         // bold text styling
-        strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
+        strong: ({ children }) => <strong className="text-text font-bold">{children}</strong>,
         // Code block and inline code styling
         code: ({ children, className, ...rest }) => {
           const match = /language-(\w+)/.exec(className || '');
@@ -26,13 +26,13 @@ export const TypingMarkdown: React.FC<TypingMarkdownProps> = ({ content, isTypin
 
           return isInline ? (
             <code
-              className="text-monokai-text rounded bg-gray-800 px-1.5 py-0.5 font-mono text-[0.9em]"
+              className="text-text rounded bg-gray-800 px-1.5 py-0.5 font-mono text-[0.9em]"
               {...rest}
             >
               {children}
             </code>
           ) : (
-            <pre className="border-monokai-highlight bg-monokai-bgII my-3 overflow-x-auto rounded border p-3 font-mono text-[0.85em] text-gray-200">
+            <pre className="border-highlight bg-bgII my-3 overflow-x-auto rounded border p-3 font-mono text-[0.85em] text-gray-200">
               <code className={className} {...rest}>
                 {children}
               </code>

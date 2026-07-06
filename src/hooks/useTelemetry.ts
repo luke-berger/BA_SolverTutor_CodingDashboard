@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useUrlParams } from './useUrlParams';
 import { useExperimentGroup } from './useExperimentGroup';
 
@@ -12,6 +12,11 @@ interface TelemetryPayload {
   aiMessageCount?: number;
 }
 
+// Global variables outside the hook so all component instances share the exact same counters
+let globalRunCount = 0;
+let globalResetCount = 0;
+let globalAiMessageCount = 0;
+
 // hook to manage telemetry data collection and submission
 export const useTelemetry = () => {
   const { surveyId, taskId } = useUrlParams();
@@ -19,24 +24,20 @@ export const useTelemetry = () => {
 
   const [startTime] = useState<number>(() => Date.now());
 
-  const runCount = useRef<number>(0);
-  const resetCount = useRef<number>(0);
-  const aiMessageCount = useRef<number>(0);
-
   // Increment functions to track user interactions
   const incrementRun = useCallback(() => {
-    runCount.current += 1;
-    console.log('Telemetry: Run', runCount.current);
+    globalRunCount += 1;
+    console.log('Telemetry: Run', globalRunCount);
   }, []);
 
   const incrementReset = useCallback(() => {
-    resetCount.current += 1;
-    console.log('Telemetry: Reset', resetCount.current);
+    globalResetCount += 1;
+    console.log('Telemetry: Reset', globalResetCount);
   }, []);
 
   const incrementAiMessage = useCallback(() => {
-    aiMessageCount.current += 1;
-    console.log('Telemetry: AI Message', aiMessageCount.current);
+    globalAiMessageCount += 1;
+    console.log('Telemetry: AI Message', globalAiMessageCount);
   }, []);
 
   // Function to submit telemetry data to the backend
@@ -46,14 +47,14 @@ export const useTelemetry = () => {
     const payload: TelemetryPayload = {
       surveyId,
       timeOnTask: timeOnTaskSec,
-      runCount: runCount.current,
-      resetCount: resetCount.current,
+      runCount: globalRunCount,
+      resetCount: globalResetCount,
     };
 
     // add group and aiMessageCount only for Task 1, since Task 2 doesn't have the chat component
     if (taskId === 1) {
       payload.group = group;
-      payload.aiMessageCount = aiMessageCount.current;
+      payload.aiMessageCount = globalAiMessageCount;
     }
 
     const endpoint =
@@ -69,6 +70,10 @@ export const useTelemetry = () => {
 
       if (!response.ok) throw new Error('network response was not ok');
       console.log(`telemetry from task ${taskId} successfully saved!`);
+
+      globalRunCount = 0;
+      globalResetCount = 0;
+      globalAiMessageCount = 0;
     } catch (error) {
       console.error(`Error saving telemetry (Task ${taskId}):`, error);
     }

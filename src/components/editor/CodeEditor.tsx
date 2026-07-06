@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { MONOKAI_THEME, registerMonacoThemes } from './monacoThemes';
+import { MONOKAI_THEME, registerMonacoThemes } from '../themes/monacoThemes';
 
 interface CodeEditorProps {
   theme?: string;
@@ -38,7 +38,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ theme = MONOKAI_THEME, code = '
   }, []);
 
   return (
-    <div className="bg-monokai-bgII flex flex-1 flex-col pt-2">
+    <div className="bg-bgII flex flex-1 flex-col pt-2">
       <Editor
         height="100%"
         defaultLanguage="python"

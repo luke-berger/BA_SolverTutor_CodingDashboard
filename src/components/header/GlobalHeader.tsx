@@ -5,8 +5,8 @@ import {
   GITHUB_DARK_DEFAULT_THEME,
   ONE_DARK_PRO_THEME,
   DRACULA_THEME,
-  ONE_DARK_THEME,
-} from '../editor/monacoThemes';
+  AYU_DARK_THEME,
+} from '../themes/monacoThemes';
 
 interface GlobalHeaderProps {
   selectedTheme: string;
@@ -15,12 +15,14 @@ interface GlobalHeaderProps {
 
 const GlobalHeader: React.FC<GlobalHeaderProps> = ({ selectedTheme, onThemeChange }) => {
   return (
-    <header className="border-monokai-highlight bg-monokai-bgI flex h-10 shrink-0 items-center justify-between border-b px-4">
+    <header className="border-highlight bg-bgI flex h-10 shrink-0 items-center justify-between border-b px-4">
       <div className="text-lg font-bold text-gray-400"></div>
-      <div className="border-monokai-highlight text-monokai-text/60 border border-dashed p-1 text-sm">
+
+      <div className="border-highlight text-text/60 border border-dashed p-1 text-sm">
         <Palette className="inline-block h-4 w-4" />
+
         <select
-          className="text-monokai-text/70 cursor-pointer bg-transparent font-mono"
+          className="text-text/70 cursor-pointer bg-transparent font-mono"
           value={selectedTheme}
           onChange={(e) => onThemeChange(e.target.value)}
         >
@@ -28,7 +30,7 @@ const GlobalHeader: React.FC<GlobalHeaderProps> = ({ selectedTheme, onThemeChang
           <option value={GITHUB_DARK_DEFAULT_THEME}>GitHub Dark Default</option>
           <option value={ONE_DARK_PRO_THEME}>One Dark Pro</option>
           <option value={DRACULA_THEME}>Dracula</option>
-          <option value={ONE_DARK_THEME}>One Dark</option>
+          <option value={AYU_DARK_THEME}>Ayu Dark</option>
         </select>
       </div>
     </header>

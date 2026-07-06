@@ -11,8 +11,8 @@ const ResetModal: React.FC<ResetModalProps> = ({ isOpen, onConfirm, onCancel }) 
   if (!isOpen) return null;
 
   return (
-    <div className="border-monokai-highlight bg-monokai-bgI absolute top-full right-1.5 z-50 mt-2 w-72 rounded-tl-2xl rounded-br-2xl rounded-bl-2xl border-3 p-5 shadow-2xl">
-      <p className="text-monokai-text mb-4 text-center text-sm leading-relaxed font-medium">
+    <div className="border-highlight bg-bgI absolute top-full right-1.5 z-50 mt-2 w-72 rounded-tl-2xl rounded-br-2xl rounded-bl-2xl border-3 p-5 shadow-2xl">
+      <p className="text-text mb-4 text-center text-sm leading-relaxed font-medium">
         This will reset the code to its initial state.
         <br />
         Do you want to proceed?

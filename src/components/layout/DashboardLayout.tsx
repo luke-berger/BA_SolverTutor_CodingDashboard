@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import GlobalHeader from '../header/GlobalHeader';
 import CodingWorkspace from '../editor/CodingWorkspace';
 import AiChat from '../chat/AiChat';
-import { MONOKAI_THEME } from '../editor/monacoThemes';
+import { MONOKAI_THEME } from '../themes/monacoThemes';
 import { useExperimentGroup } from '../../hooks/useExperimentGroup';
 import { useUrlParams } from '../../hooks/useUrlParams';
+import { appThemeColors } from '../themes/appThemeColors';
 
 const DashboardLayout: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState(MONOKAI_THEME);
@@ -13,7 +14,10 @@ const DashboardLayout: React.FC = () => {
   const [currentCode, setCurrentCode] = useState('');
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#1F201F] text-white">
+    <div
+      style={appThemeColors[selectedTheme]}
+      className="bg-bgI text-text relative flex h-screen w-full flex-col overflow-hidden"
+    >
       <GlobalHeader selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
 
       {/* Split-Screen Container */}
