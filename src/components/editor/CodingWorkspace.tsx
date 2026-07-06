@@ -7,17 +7,18 @@ import { useCodeExecution } from '../../hooks/useCodeExecution';
 interface CodingWorkspaceProps {
   theme: string;
   onCodeChange: (code: string) => void;
+  taskId: number;
 }
 
-const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme, onCodeChange }) => {
-  const { code, setCode, output, isLoading, handleRun, handleReset, showSuccess } =
-    useCodeExecution();
+const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme, onCodeChange, taskId }) => {
+  const { code, setCode, output, isLoading, handleRun, handleReset, showSuccess, filename } =
+    useCodeExecution(taskId);
 
   useEffect(() => {
     if (code) {
       onCodeChange(code);
     }
-  }, []);
+  }, [code, onCodeChange]);
 
   const handleEditorChange = (value: string | undefined) => {
     const newCode = value || '';
@@ -28,7 +29,7 @@ const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme, onCodeChange }
   return (
     <div className="flex flex-1 flex-col">
       <EditorHeader
-        filename="task_I_bug.py"
+        filename={filename}
         onRun={handleRun}
         onReset={handleReset}
         isLoading={isLoading}

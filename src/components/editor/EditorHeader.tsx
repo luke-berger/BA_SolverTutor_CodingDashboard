@@ -90,8 +90,6 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
               // navigate to survey function here
             }
           />
-          {/* // onConfirm
-          will later be used to switch to the survey page. */}
         </div>
       </div>
     </div>

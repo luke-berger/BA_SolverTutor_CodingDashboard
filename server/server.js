@@ -198,7 +198,7 @@ app.post('/api/execute', (req, res) => {
  * POST /api/run-task
  */
 app.post('/api/run-task', (req, res) => {
-  const { taskCode, testCode, taskFilename = 'task1_bug.py', timeout = 10000 } = req.body;
+  const { taskCode, testCode, taskFilename, timeout = 10000 } = req.body;
 
   if (!taskCode || !testCode) {
     return res
@@ -219,23 +219,23 @@ app.post('/api/run-task', (req, res) => {
     const testFile = path.join(tempSubdir, 'test_task.py');
     fs.writeFileSync(testFile, testCode);
 
-    // stage 1: syntax check
+    // stage 1: Syntax & NameError Check
+    const moduleName = taskFilename.replace('.py', '');
     execFile(
       pythonExecutable,
-      ['-m', 'py_compile', taskFile],
+      // import checks both syntax and name errors
+      ['-c', `import ${moduleName}`],
       { cwd: tempSubdir },
-      (syntaxErr, syntaxStdout, syntaxStderr) => {
-        // if syntax error, return immediately without running tests
-        if (syntaxErr) {
+      (checkErr, checkStdout, checkStderr) => {
+        if (checkErr) {
           try {
             fs.rmSync(tempSubdir, { recursive: true });
           } catch (e) {}
 
           return res.json({
             success: false,
-            error: 'Syntax Error',
-            // Python writes syntax errors to stderr
-            stderr: syntaxStderr || syntaxErr.message,
+            testsFailed: true,
+            stdout: checkStderr || checkErr.message,
           });
         }
 
@@ -253,7 +253,7 @@ app.post('/api/run-task', (req, res) => {
               if (testErr.killed) {
                 return res.json({ success: false, error: `Test timeout (exceeded ${timeout}ms)` });
               }
-              if (testErr.code === 1) {
+              if (testErr.code === 1 || testErr.code === 2) {
                 return res.json({ success: false, testsFailed: true, stdout: testStdout });
               }
               return res.json({

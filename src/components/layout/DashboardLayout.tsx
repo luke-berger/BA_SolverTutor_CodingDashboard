@@ -18,8 +18,14 @@ const DashboardLayout: React.FC = () => {
 
       {/* Split-Screen Container */}
       <div className="flex flex-1 overflow-hidden">
-        <CodingWorkspace theme={selectedTheme} onCodeChange={setCurrentCode} />
-
+        {/* taskId passed as key to force remounting of CodingWorkspace when taskId changes, ensuring
+        correct initial code and filename are loaded */}
+        <CodingWorkspace
+          key={taskId}
+          theme={selectedTheme}
+          onCodeChange={setCurrentCode}
+          taskId={taskId}
+        />
         {/* AiChat only in Task 1 */}
         {taskId === 1 && <AiChat group={group} currentCode={currentCode} />}
       </div>

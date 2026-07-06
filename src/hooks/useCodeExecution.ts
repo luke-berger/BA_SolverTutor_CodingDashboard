@@ -1,15 +1,37 @@
 import { useState } from 'react';
 import { runTaskTests } from '../services/codeExecution';
-import initialBugCode from '../data/programs/task_I_bug.py?raw';
-import backgroundTestCode from '../data/testcases/task_I_test.py?raw';
+import task1Code from '../data/programs/task1_character_creation.py?raw';
+import task1Test from '../data/testcases/task1_test_character_creation.py?raw';
+import task2Code from '../data/programs/task2_library_system.py?raw';
+import task2Test from '../data/testcases/task2_test_library_system.py?raw';
+
+type TaskData = {
+  code: string;
+  test: string;
+  filename: string;
+};
+
+// lexical structure to hold task-specific data
+const TASK_DATA: Record<number, TaskData> = {
+  1: { code: task1Code, test: task1Test, filename: 'character_creation.py' },
+  2: { code: task2Code, test: task2Test, filename: 'library_system.py' },
+};
 
 // sanitize output to remove unnecessary details and make it more user-friendly
 const sanitizeOutput = (text: string) => {
   if (!text) return '';
   let clean = text;
 
-  clean = clean.replace(/[^\s]*test_task\.py/g, 'test_task.py');
-  clean = clean.replace(/[^\s]*task_I_bug\.py/g, 'task_I_bug.py');
+  // clean tests
+  clean = clean.replace(/[^\s]*\.py::/g, '• ');
+
+  clean = clean.replace(/[^\s]*character_creation\.py:/g, 'character_creation.py:');
+  clean = clean.replace(/[^\s]*library_system\.py:/g, 'library_system.py:');
+
+  // clean syntax and name errors
+  clean = clean.replace(/File "[^"]*\/([^/]+\.py)"/g, 'File "$1"');
+  clean = clean.replace(/ *File "<string>".*\n/g, '');
+
   clean = clean.replace(/platform.*\n/g, '');
   clean = clean.replace(/cachedir:.*\n/g, '');
   clean = clean.replace(/rootdir:.*\n/g, '');
@@ -20,8 +42,10 @@ const sanitizeOutput = (text: string) => {
 };
 
 // hook to manage code execution state and interactions with the backend
-export const useCodeExecution = () => {
-  const [code, setCode] = useState(initialBugCode);
+export const useCodeExecution = (taskId: number) => {
+  const currentTask = TASK_DATA[taskId];
+
+  const [code, setCode] = useState(currentTask.code);
   const [output, setOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -31,7 +55,7 @@ export const useCodeExecution = () => {
     setOutput('Running tests...\n');
 
     try {
-      const response = await runTaskTests(code, backgroundTestCode, 'task_I_bug.py', 10000);
+      const response = await runTaskTests(code, currentTask.test, currentTask.filename, 10000);
 
       let rawOutput = '';
       if (response.success) {
@@ -55,9 +79,18 @@ export const useCodeExecution = () => {
   };
 
   const handleReset = () => {
-    setCode(initialBugCode);
+    setCode(currentTask.code);
     setOutput('Code has been reset to initial state.');
   };
 
-  return { code, setCode, output, isLoading, handleRun, handleReset, showSuccess };
+  return {
+    code,
+    setCode,
+    output,
+    isLoading,
+    handleRun,
+    handleReset,
+    showSuccess,
+    filename: currentTask.filename,
+  };
 };
