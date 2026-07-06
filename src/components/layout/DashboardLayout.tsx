@@ -16,7 +16,7 @@ const DashboardLayout: React.FC = () => {
   return (
     <div
       style={appThemeColors[selectedTheme]}
-      className="bg-bgI text-text relative flex h-screen w-full flex-col overflow-hidden"
+      className="bg-bgI text-text relative flex h-screen w-full flex-col overflow-hidden overscroll-none"
     >
       <GlobalHeader selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
 
