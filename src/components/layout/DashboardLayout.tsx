@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GlobalHeader from '../header/GlobalHeader';
 import CodingWorkspace from '../editor/CodingWorkspace';
 import AiChat from '../chat/AiChat';
@@ -6,19 +6,37 @@ import { MONOKAI_THEME } from '../themes/monacoThemes';
 import { useExperimentGroup } from '../../hooks/useExperimentGroup';
 import { useUrlParams } from '../../hooks/useUrlParams';
 import { appThemeColors } from '../themes/appThemeColors';
+import { useTelemetry } from '../../hooks/useTelemetry';
 
+// DashboardLayout component that wraps the entire dashboard
 const DashboardLayout: React.FC = () => {
-  const [selectedTheme, setSelectedTheme] = useState(MONOKAI_THEME);
+  // lazy initialization of selectedTheme from localStorage, defaulting to MONOKAI_THEME if not found
+  const [selectedTheme, setSelectedTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('solverTutorTheme');
+    return savedTheme || MONOKAI_THEME;
+  });
+  // Persist selectedTheme to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('solverTutorTheme', selectedTheme);
+  }, [selectedTheme]);
+
   const { group, resetExperiment } = useExperimentGroup();
   const { taskId } = useUrlParams();
   const [currentCode, setCurrentCode] = useState('');
+
+  // Telemetry hook to track user interactions
+  const { incrementThemeChange } = useTelemetry();
+  const handleThemeChange = (theme: string) => {
+    setSelectedTheme(theme);
+    incrementThemeChange();
+  };
 
   return (
     <div
       style={appThemeColors[selectedTheme]}
       className="bg-bgI text-text relative flex h-screen w-full flex-col overflow-hidden overscroll-none"
     >
-      <GlobalHeader selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
+      <GlobalHeader selectedTheme={selectedTheme} onThemeChange={handleThemeChange} />
 
       {/* Split-Screen Container */}
       <div className="flex flex-1 overflow-hidden">

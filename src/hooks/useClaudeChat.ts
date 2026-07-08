@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ExperimentGroup } from './useExperimentGroup';
 import { useTelemetry } from './useTelemetry';
 import { sendChatMessage } from '../services/aiClient';
@@ -16,7 +16,17 @@ export const useClaudeChat = (group: ExperimentGroup, currentCode: string) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { incrementAiMessage } = useTelemetry();
+  const { incrementAiMessage, updateChatHistory } = useTelemetry();
+
+  useEffect(() => {
+    updateChatHistory(
+      messages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+        codeSnapshot: msg.codeSnapshot,
+      }))
+    );
+  }, [messages, updateChatHistory]);
 
   // async because we need to wait for the backend response
   const sendMessage = async () => {

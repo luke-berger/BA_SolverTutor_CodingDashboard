@@ -10,12 +10,16 @@ interface TelemetryPayload {
   resetCount: number;
   group?: string;
   aiMessageCount?: number;
+  chatHistory?: { role: string; content: string; codeSnapshot?: string }[];
+  themeChangeCount?: number;
 }
 
 // Global variables outside the hook so all component instances share the exact same counters
 let globalRunCount = 0;
 let globalResetCount = 0;
 let globalAiMessageCount = 0;
+let globalChatHistory: { role: string; content: string; codeSnapshot?: string }[] = [];
+let globalThemeChangeCount = 0;
 
 // hook to manage telemetry data collection and submission
 export const useTelemetry = () => {
@@ -40,6 +44,18 @@ export const useTelemetry = () => {
     console.log('Telemetry: AI Message', globalAiMessageCount);
   }, []);
 
+  const updateChatHistory = useCallback(
+    (history: { role: string; content: string; codeSnapshot?: string }[]) => {
+      globalChatHistory = history;
+    },
+    []
+  );
+
+  const incrementThemeChange = useCallback(() => {
+    globalThemeChangeCount += 1;
+    console.log('Telemetry: Theme Change', globalThemeChangeCount);
+  }, []);
+
   // Function to submit telemetry data to the backend
   const submitTelemetry = async () => {
     const timeOnTaskSec = Math.floor((Date.now() - startTime) / 1000);
@@ -49,12 +65,14 @@ export const useTelemetry = () => {
       timeOnTask: timeOnTaskSec,
       runCount: globalRunCount,
       resetCount: globalResetCount,
+      themeChangeCount: globalThemeChangeCount,
     };
 
-    // add group and aiMessageCount only for Task 1, since Task 2 doesn't have the chat component
+    // add group, aiMessageCount and chatHistory only for Task 1, since Task 2 doesn't have the chat component
     if (taskId === 1) {
       payload.group = group;
       payload.aiMessageCount = globalAiMessageCount;
+      payload.chatHistory = globalChatHistory;
     }
 
     const endpoint =
@@ -74,6 +92,8 @@ export const useTelemetry = () => {
       globalRunCount = 0;
       globalResetCount = 0;
       globalAiMessageCount = 0;
+      globalChatHistory = [];
+      globalThemeChangeCount = 0;
     } catch (error) {
       console.error(`Error saving telemetry (Task ${taskId}):`, error);
     }
@@ -83,6 +103,8 @@ export const useTelemetry = () => {
     incrementRun,
     incrementReset,
     incrementAiMessage,
+    updateChatHistory,
+    incrementThemeChange,
     submitTelemetry,
   };
 };

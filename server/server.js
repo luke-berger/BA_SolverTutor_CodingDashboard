@@ -13,10 +13,12 @@ const db = new Database('experiment_data.db');
 db.exec(`CREATE TABLE IF NOT EXISTS participants (
   survey_id TEXT PRIMARY KEY,
   experiment_group TEXT,
+  total_theme_changes INTEGER DEFAULT 0,
   task1_time_sec INTEGER,
   task1_runs INTEGER,
   task1_resets INTEGER,
   task1_ai_messages INTEGER,
+  task1_chat_history TEXT,
   task2_time_sec INTEGER,
   task2_runs INTEGER,
   task2_resets INTEGER
@@ -70,19 +72,39 @@ app.post('/api/chat', async (req, res) => {
  */
 app.post('/api/log-task1', (req, res) => {
   try {
-    const { surveyId, group, timeOnTask, runCount, resetCount, aiMessageCount } = req.body;
+    const {
+      surveyId,
+      group,
+      timeOnTask,
+      runCount,
+      resetCount,
+      aiMessageCount,
+      chatHistory,
+      themeChangeCount,
+    } = req.body;
 
     const stmt = db.prepare(`
-      INSERT INTO participants (survey_id, experiment_group, task1_time_sec, task1_runs, task1_resets, task1_ai_messages) 
-      VALUES (?, ?, ?, ?, ?, ?) 
+      INSERT INTO participants (survey_id, experiment_group, task1_time_sec, task1_runs, task1_resets, task1_ai_messages, task1_chat_history, total_theme_changes) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
       ON CONFLICT(survey_id) DO UPDATE SET 
         task1_time_sec = excluded.task1_time_sec, 
         task1_runs = excluded.task1_runs, 
         task1_resets = excluded.task1_resets, 
-        task1_ai_messages = excluded.task1_ai_messages
+        task1_ai_messages = excluded.task1_ai_messages,
+        task1_chat_history = excluded.task1_chat_history,
+        total_theme_changes = COALESCE(participants.total_theme_changes, 0) + excluded.total_theme_changes
     `);
 
-    stmt.run(surveyId, group, timeOnTask, runCount, resetCount, aiMessageCount);
+    stmt.run(
+      surveyId,
+      group,
+      timeOnTask,
+      runCount,
+      resetCount,
+      aiMessageCount,
+      JSON.stringify(chatHistory),
+      themeChangeCount
+    );
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error in /api/log-task1:', error);
@@ -96,18 +118,19 @@ app.post('/api/log-task1', (req, res) => {
  */
 app.post('/api/log-task2', (req, res) => {
   try {
-    const { surveyId, timeOnTask, runCount, resetCount } = req.body;
+    const { surveyId, timeOnTask, runCount, resetCount, themeChangeCount } = req.body;
 
     const stmt = db.prepare(`
-      INSERT INTO participants (survey_id, task2_time_sec, task2_runs, task2_resets) 
-      VALUES (?, ?, ?, ?) 
+      INSERT INTO participants (survey_id, task2_time_sec, task2_runs, task2_resets, total_theme_changes) 
+      VALUES (?, ?, ?, ?, ?) 
       ON CONFLICT(survey_id) DO UPDATE SET 
         task2_time_sec = excluded.task2_time_sec, 
         task2_runs = excluded.task2_runs, 
-        task2_resets = excluded.task2_resets
+        task2_resets = excluded.task2_resets,
+        total_theme_changes = COALESCE(participants.total_theme_changes, 0) + excluded.total_theme_changes
     `);
 
-    stmt.run(surveyId, timeOnTask, runCount, resetCount);
+    stmt.run(surveyId, timeOnTask, runCount, resetCount, themeChangeCount);
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error in /api/log-task2:', error);
