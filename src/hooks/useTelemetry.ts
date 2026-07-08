@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useUrlParams } from './useUrlParams';
 import { useExperimentGroup } from './useExperimentGroup';
+import { submitTelemetryData } from '../services/telemetryClient';
 
 // defines the shape of the telemetry data we want to send to the backend (group and aiMessageCount are optional because they are only relevant for Task 1)
 interface TelemetryPayload {
@@ -75,19 +76,12 @@ export const useTelemetry = () => {
       payload.chatHistory = globalChatHistory;
     }
 
-    const endpoint =
-      taskId === 1 ? 'http://localhost:3001/api/log-task1' : 'http://localhost:3001/api/log-task2';
-    console.log(`sending telemetry from task ${taskId}...`, payload);
+    const endpoint = taskId === 1 ? 'log-task1' : 'log-task2';
+    console.log(`submitting telemetry from task ${taskId}...`, payload);
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error('network response was not ok');
-      console.log(`telemetry from task ${taskId} successfully saved!`);
+      await submitTelemetryData(endpoint, payload); // use telemetry service for POST request
+      console.log(`telemetry from task ${taskId} successfully submitted!`);
 
       globalRunCount = 0;
       globalResetCount = 0;
@@ -95,7 +89,7 @@ export const useTelemetry = () => {
       globalChatHistory = [];
       globalThemeChangeCount = 0;
     } catch (error) {
-      console.error(`Error saving telemetry (Task ${taskId}):`, error);
+      console.error(`Error submitting telemetry (Task ${taskId}):`, error);
     }
   };
 
