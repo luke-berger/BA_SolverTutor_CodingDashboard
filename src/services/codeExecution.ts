@@ -2,7 +2,7 @@
  * Code execution service - communicates with the backend server
  */
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = '/api';
 
 export interface ExecutionResponse {
   success: boolean;
@@ -17,7 +17,7 @@ export interface ExecutionResponse {
  */
 export async function executePython(code: string, timeout = 5000): Promise<ExecutionResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/execute`, {
+    const response = await fetch(`${API_BASE_URL}/execute`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export async function runTaskTests(
   timeout = 10000
 ): Promise<ExecutionResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/run-task`, {
+    const response = await fetch(`${API_BASE_URL}/run-task`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export async function runTaskTests(
  */
 export async function runTests(testCode: string, timeout = 10000): Promise<ExecutionResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/test`, {
+    const response = await fetch(`${API_BASE_URL}/test`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

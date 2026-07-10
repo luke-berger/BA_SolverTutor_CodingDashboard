@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = '/api';
 
 // send telemetry data to the backend API
 export async function submitTelemetryData(endpoint: string, payload: unknown): Promise<Response> {

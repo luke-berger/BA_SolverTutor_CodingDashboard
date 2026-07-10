@@ -35,7 +35,11 @@ const pytestExecutable = path.join(projectRoot, '.venv', 'bin', 'pytest');
 // Middleware
 app.use(
   cors({
-    origin: 'http://localhost:5173', // restrict CORS to frontend dev server ( change this during mounting!!! )
+    origin: [
+      'http://localhost:5173', // for local development
+      // 'https://deine-uni-domain.de', // for production deployment (replace with your actual domain)
+      // 'http://123.45.67.89'               // only if you have a static IP for your deployment
+    ],
     methods: ['GET', 'POST'],
   })
 );

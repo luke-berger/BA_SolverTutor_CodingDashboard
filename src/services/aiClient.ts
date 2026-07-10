@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = '/api';
 
 export interface ChatResponse {
   success: boolean;
@@ -15,7 +15,7 @@ export async function sendChatMessage(
   currentCode?: string
 ): Promise<ChatResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
