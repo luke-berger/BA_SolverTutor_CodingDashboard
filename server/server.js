@@ -38,7 +38,7 @@ app.use(
     origin: [
       'http://localhost:5173', // for local development
       // 'https://deine-uni-domain.de', // for production deployment (replace with your actual domain)
-      'http://141.83.87.120', // only if you have a static IP for your deployment
+      'http://141.83.87.215', // only if you have a static IP for your deployment
     ],
     methods: ['GET', 'POST'],
   })
