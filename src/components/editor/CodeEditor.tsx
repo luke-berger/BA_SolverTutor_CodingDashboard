@@ -38,7 +38,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ theme = MONOKAI_THEME, code = '
   }, []);
 
   return (
-    <div className="bg-bgII flex flex-1 flex-col pt-2">
+    <div className="bg-bgII flex min-h-0 min-w-0 flex-1 flex-col pt-2">
       <Editor
         height="100%"
         defaultLanguage="python"
@@ -47,6 +47,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ theme = MONOKAI_THEME, code = '
         beforeMount={registerMonacoThemes}
         theme={theme}
         options={{
+          automaticLayout: true,
           minimap: { enabled: true },
           fontFamily: 'Fira Code, monospace',
           fontSize: editorFontSize, // Use calculated size here

@@ -39,7 +39,7 @@ const DashboardLayout: React.FC = () => {
       <GlobalHeader selectedTheme={selectedTheme} onThemeChange={handleThemeChange} />
 
       {/* Split-Screen Container */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* taskId passed as key to force remounting of CodingWorkspace when taskId changes, ensuring
         correct initial code and filename are loaded */}
         <CodingWorkspace
