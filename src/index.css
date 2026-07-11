@@ -8,8 +8,15 @@
   --color-chat-bg: #2f312f;
 }
 
+:root {
+  --app-font-size: clamp(14px, 1.35vw - 20px, 42px);
+  --chat-body-font-size: calc(var(--app-font-size) * 0.9);
+  --chat-toolbar-font-size: calc(var(--app-font-size) * 0.7);
+  --chat-icon-size: calc(var(--app-font-size) * 0.8);
+}
+
 @layer base {
   html {
-    font-size: clamp(16px, 1.35vw - 20px, 42px);
+    font-size: var(--app-font-size);
   }
 }

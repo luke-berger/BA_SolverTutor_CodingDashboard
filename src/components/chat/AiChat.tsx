@@ -109,13 +109,19 @@ const AiChat: React.FC<AiChatProps> = ({ group, currentCode }) => {
             disabled={isLoading}
             placeholder="Ask Claude a question..."
             rows={1}
-            className="text-text placeholder-text/50 max-h-40 w-full resize-none overflow-y-auto bg-transparent px-3 pt-3 pb-1 text-[clamp(14px,1vw-8px,18px)] focus:outline-none disabled:opacity-50"
+            className="text-text placeholder-text/50 max-h-40 w-full resize-none overflow-y-auto bg-transparent px-3 pt-3 pb-1 focus:outline-none disabled:opacity-50"
+            style={{ fontSize: 'var(--chat-body-font-size)' }}
           />
 
           {/* Tool Bar */}
           <div className="flex items-center justify-between px-2 pt-1 pb-1.5">
             {/* Left side: Model name */}
-            <div className="text-text/40 px-2 font-mono text-[11px]"> Claude Haiku 4.5</div>
+            <div
+              className="text-text/40 px-2 font-mono"
+              style={{ fontSize: 'var(--chat-toolbar-font-size)' }}
+            >
+              Claude Haiku 4.5
+            </div>
 
             {/* Right side: visual indicator for status or visual hint to press enter */}
             <div
@@ -125,9 +131,17 @@ const AiChat: React.FC<AiChatProps> = ({ group, currentCode }) => {
               title={isLoading ? 'Generating...' : 'Press Enter to send'}
             >
               {isLoading ? (
-                <Square className="h-3 w-3" fill="currentColor" strokeWidth={0} />
+                <Square
+                  className="shrink-0"
+                  fill="currentColor"
+                  strokeWidth={0}
+                  style={{ width: 'var(--chat-icon-size)', height: 'var(--chat-icon-size)' }}
+                />
               ) : (
-                <CornerDownLeft className="h-4 w-4" />
+                <CornerDownLeft
+                  className="shrink-0"
+                  style={{ width: 'var(--chat-icon-size)', height: 'var(--chat-icon-size)' }}
+                />
               )}
             </div>
           </div>
