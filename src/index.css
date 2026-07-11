@@ -9,7 +9,7 @@
 }
 
 :root {
-  --app-font-size: clamp(14px, 1.35vw - 20px, 42px);
+  --app-font-size: clamp(14px, 1.2vw - 20px, 60px);
   --chat-body-font-size: calc(var(--app-font-size) * 0.9);
   --chat-toolbar-font-size: calc(var(--app-font-size) * 0.7);
   --chat-icon-size: calc(var(--app-font-size) * 0.8);
