@@ -1,36 +1,20 @@
-// hook to extract and manage URL parameters for task and survey identification
 export const useUrlParams = () => {
   const queryParams = new URLSearchParams(window.location.search);
 
-  // searching for p-parameter (payload)
-  const payload = queryParams.get('p');
-
-  // fallback if nothing is attached to the URL
+  // fallback values
   let taskId = 1;
-  let surveyId = 'local-test-user-001';
+  let surveyId = 'unknown-user';
 
-  if (payload) {
-    try {
-      // translate base64 string into text
-      const decodedString = atob(payload);
+  // read query parameters
+  const plainTaskId = queryParams.get('t');
+  const plainSurveyId = queryParams.get('u');
 
-      // tranform text into JS-object
-      const parsedData = JSON.parse(decodedString);
+  if (plainTaskId === '2') taskId = 2;
+  if (plainSurveyId) surveyId = plainSurveyId;
 
-      // read the data
-      if (parsedData.taskId === 2) taskId = 2;
-      if (parsedData.surveyId) surveyId = parsedData.surveyId;
-    } catch (error) {
-      // if someone tries to write or change the p-parameter it trows an error
-      console.warn('Error: ' + error);
-    }
-  } else {
-    // ONLY FOR TESTING PURPOSES, remove after implentation phase is over
-    const plainTaskId = queryParams.get('taskId');
-    const plainSurveyId = queryParams.get('surveyId');
-
-    if (plainTaskId === '2') taskId = 2;
-    if (plainSurveyId) surveyId = plainSurveyId;
+  // after reading the parameters, we remove them from the URL without reloading page
+  if (plainTaskId || plainSurveyId) {
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
   return { taskId, surveyId };
