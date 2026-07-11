@@ -4,6 +4,7 @@ import { Play, RotateCcw } from 'lucide-react';
 import ResetModal from '../modals/ResetModal';
 import SuccessModal from '../modals/SuccessModal';
 import { useTelemetry } from '../../hooks/useTelemetry';
+import { handleProceedToSurvey } from '../../utils/surveyUtils.ts';
 
 interface EditorHeaderProps {
   filename: string;
@@ -11,6 +12,8 @@ interface EditorHeaderProps {
   onReset?: () => void;
   isLoading?: boolean;
   showSuccess?: boolean;
+  surveyId?: string;
+  taskId?: number;
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({
@@ -19,6 +22,8 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
   onReset,
   isLoading = false,
   showSuccess,
+  surveyId,
+  taskId,
 }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { incrementRun, incrementReset, submitTelemetry } = useTelemetry();
@@ -87,10 +92,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
         <div className="">
           <SuccessModal
             isOpen={showSuccess || false}
-            onConfirm={
-              () => showSuccess
-              // navigate to survey function here
-            }
+            onConfirm={() => handleProceedToSurvey(surveyId || '', taskId || 1)}
           />
         </div>
       </div>

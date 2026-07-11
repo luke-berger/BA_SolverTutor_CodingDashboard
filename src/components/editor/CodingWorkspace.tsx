@@ -8,9 +8,15 @@ interface CodingWorkspaceProps {
   theme: string;
   onCodeChange: (code: string) => void;
   taskId: number;
+  surveyId?: string;
 }
 
-const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme, onCodeChange, taskId }) => {
+const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({
+  theme,
+  onCodeChange,
+  taskId,
+  surveyId,
+}) => {
   const { code, setCode, output, isLoading, handleRun, handleReset, showSuccess, filename } =
     useCodeExecution(taskId);
 
@@ -34,6 +40,8 @@ const CodingWorkspace: React.FC<CodingWorkspaceProps> = ({ theme, onCodeChange, 
         onReset={handleReset}
         isLoading={isLoading}
         showSuccess={showSuccess}
+        surveyId={surveyId}
+        taskId={taskId}
       />
       <CodeEditor theme={theme} code={code} onChange={handleEditorChange} />
       <Terminal output={output} />

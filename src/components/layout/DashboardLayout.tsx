@@ -21,7 +21,7 @@ const DashboardLayout: React.FC = () => {
   }, [selectedTheme]);
 
   const { group, resetExperiment } = useExperimentGroup();
-  const { taskId } = useUrlParams();
+  const { taskId, surveyId } = useUrlParams();
   const [currentCode, setCurrentCode] = useState('');
 
   // Telemetry hook to track user interactions
@@ -47,6 +47,7 @@ const DashboardLayout: React.FC = () => {
           theme={selectedTheme}
           onCodeChange={setCurrentCode}
           taskId={taskId}
+          surveyId={surveyId}
         />
         {/* AiChat only in Task 1 */}
         {taskId === 1 && <AiChat group={group} currentCode={currentCode} />}
