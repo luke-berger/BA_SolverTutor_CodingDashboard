@@ -13,6 +13,7 @@ interface TelemetryPayload {
   aiMessageCount?: number;
   chatHistory?: { role: string; content: string; codeSnapshot?: string }[];
   themeChangeCount?: number;
+  status: 'in_progress' | 'completed';
 }
 
 // Global variables outside the hook so all component instances share the exact same counters
@@ -29,68 +30,84 @@ export const useTelemetry = () => {
 
   const [startTime] = useState<number>(() => Date.now());
 
+  // background sync function to save data without waiting for the request
+  const syncToDatabase = useCallback(
+    (isFinal: boolean = false) => {
+      const timeOnTaskSec = Math.floor((Date.now() - startTime) / 1000);
+
+      const payload: TelemetryPayload = {
+        surveyId,
+        timeOnTask: timeOnTaskSec,
+        runCount: globalRunCount,
+        resetCount: globalResetCount,
+        themeChangeCount: globalThemeChangeCount,
+        status: isFinal ? 'completed' : 'in_progress', // set status based on completion
+      };
+
+      // add group, aiMessageCount and chatHistory only for Task 1, since Task 2 doesn't have the chat component
+      if (taskId === 1) {
+        payload.group = group;
+        payload.aiMessageCount = globalAiMessageCount;
+        payload.chatHistory = globalChatHistory;
+      }
+
+      const endpoint = taskId === 1 ? 'log-task1' : 'log-task2';
+
+      // fire and forget request, catch errors to avoid UI blocking
+      submitTelemetryData(endpoint, payload).catch((error) => {
+        console.error(`Background sync failed for task ${taskId}:`, error);
+      });
+    },
+    [surveyId, taskId, group, startTime]
+  );
+
   // Increment functions to track user interactions
   const incrementRun = useCallback(() => {
     globalRunCount += 1;
     console.log('Telemetry: Run', globalRunCount);
-  }, []);
+    syncToDatabase(); // trigger live sync
+  }, [syncToDatabase]);
 
   const incrementReset = useCallback(() => {
     globalResetCount += 1;
     console.log('Telemetry: Reset', globalResetCount);
-  }, []);
+    syncToDatabase();
+  }, [syncToDatabase]);
 
   const incrementAiMessage = useCallback(() => {
     globalAiMessageCount += 1;
     console.log('Telemetry: AI Message', globalAiMessageCount);
-  }, []);
+    syncToDatabase();
+  }, [syncToDatabase]);
 
   const updateChatHistory = useCallback(
     (history: { role: string; content: string; codeSnapshot?: string }[]) => {
       globalChatHistory = history;
+      syncToDatabase();
     },
-    []
+    [syncToDatabase]
   );
 
   const incrementThemeChange = useCallback(() => {
     globalThemeChangeCount += 1;
     console.log('Telemetry: Theme Change', globalThemeChangeCount);
-  }, []);
+    syncToDatabase();
+  }, [syncToDatabase]);
 
   // Function to submit telemetry data to the backend
   const submitTelemetry = async () => {
-    const timeOnTaskSec = Math.floor((Date.now() - startTime) / 1000);
+    console.log(`submitting final telemetry from task ${taskId}...`);
 
-    const payload: TelemetryPayload = {
-      surveyId,
-      timeOnTask: timeOnTaskSec,
-      runCount: globalRunCount,
-      resetCount: globalResetCount,
-      themeChangeCount: globalThemeChangeCount,
-    };
+    // submit the final state and mark as completed
+    syncToDatabase(true);
+    console.log(`telemetry from task ${taskId} successfully submitted!`);
 
-    // add group, aiMessageCount and chatHistory only for Task 1, since Task 2 doesn't have the chat component
-    if (taskId === 1) {
-      payload.group = group;
-      payload.aiMessageCount = globalAiMessageCount;
-      payload.chatHistory = globalChatHistory;
-    }
-
-    const endpoint = taskId === 1 ? 'log-task1' : 'log-task2';
-    console.log(`submitting telemetry from task ${taskId}...`, payload);
-
-    try {
-      await submitTelemetryData(endpoint, payload); // use telemetry service for POST request
-      console.log(`telemetry from task ${taskId} successfully submitted!`);
-
-      globalRunCount = 0;
-      globalResetCount = 0;
-      globalAiMessageCount = 0;
-      globalChatHistory = [];
-      globalThemeChangeCount = 0;
-    } catch (error) {
-      console.error(`Error submitting telemetry (Task ${taskId}):`, error);
-    }
+    // reset global variables for the next task
+    globalRunCount = 0;
+    globalResetCount = 0;
+    globalAiMessageCount = 0;
+    globalChatHistory = [];
+    globalThemeChangeCount = 0;
   };
 
   return {

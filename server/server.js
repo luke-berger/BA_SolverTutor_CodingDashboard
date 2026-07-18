@@ -10,18 +10,22 @@ const { getClaudeResponse } = require('./services/aiService');
 const Database = require('better-sqlite3');
 const db = new Database('experiment_data.db');
 
+// update database schema with specific columns for task 1 and task 2 status and theme changes
 db.exec(`CREATE TABLE IF NOT EXISTS participants (
   survey_id TEXT PRIMARY KEY,
   experiment_group TEXT,
-  total_theme_changes INTEGER DEFAULT 0,
   task1_time_sec INTEGER,
   task1_runs INTEGER,
   task1_resets INTEGER,
   task1_ai_messages INTEGER,
   task1_chat_history TEXT,
+  task1_theme_changes INTEGER DEFAULT 0,
+  task1_status TEXT DEFAULT 'in_progress',
   task2_time_sec INTEGER,
   task2_runs INTEGER,
-  task2_resets INTEGER
+  task2_resets INTEGER,
+  task2_theme_changes INTEGER DEFAULT 0,
+  task2_status TEXT DEFAULT 'in_progress'
 );`);
 
 const app = express();
@@ -37,8 +41,8 @@ app.use(
   cors({
     origin: [
       'http://localhost:5173', // for local development
-      // 'https://deine-uni-domain.de', // for production deployment (replace with your actual domain)
-      'http://141.83.87.215', // only if you have a static IP for your deployment
+      // 'https://meine-uni-domain.de', // you could add the domain here
+      'http://141.83.87.215',
     ],
     methods: ['GET', 'POST'],
   })
@@ -59,7 +63,7 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { messages, group } = req.body;
 
-    // security check: see if frontend everything
+    // security check: see if frontend sent the required data
     if (!messages || !group) {
       return res.status(400).json({ error: 'Messages and Group are required' });
     }
@@ -90,18 +94,24 @@ app.post('/api/log-task1', (req, res) => {
       aiMessageCount,
       chatHistory,
       themeChangeCount,
+      status,
     } = req.body;
 
     const stmt = db.prepare(`
-      INSERT INTO participants (survey_id, experiment_group, task1_time_sec, task1_runs, task1_resets, task1_ai_messages, task1_chat_history, total_theme_changes) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
+      INSERT INTO participants (
+        survey_id, experiment_group, task1_time_sec, task1_runs, 
+        task1_resets, task1_ai_messages, task1_chat_history, 
+        task1_theme_changes, task1_status
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
       ON CONFLICT(survey_id) DO UPDATE SET 
         task1_time_sec = excluded.task1_time_sec, 
         task1_runs = excluded.task1_runs, 
         task1_resets = excluded.task1_resets, 
         task1_ai_messages = excluded.task1_ai_messages,
         task1_chat_history = excluded.task1_chat_history,
-        total_theme_changes = COALESCE(participants.total_theme_changes, 0) + excluded.total_theme_changes
+        task1_theme_changes = excluded.task1_theme_changes,
+        task1_status = excluded.task1_status
     `);
 
     stmt.run(
@@ -112,7 +122,8 @@ app.post('/api/log-task1', (req, res) => {
       resetCount,
       aiMessageCount,
       JSON.stringify(chatHistory),
-      themeChangeCount
+      themeChangeCount,
+      status
     );
     res.json({ success: true });
   } catch (error) {
@@ -127,19 +138,23 @@ app.post('/api/log-task1', (req, res) => {
  */
 app.post('/api/log-task2', (req, res) => {
   try {
-    const { surveyId, timeOnTask, runCount, resetCount, themeChangeCount } = req.body;
+    const { surveyId, timeOnTask, runCount, resetCount, themeChangeCount, status } = req.body;
 
     const stmt = db.prepare(`
-      INSERT INTO participants (survey_id, task2_time_sec, task2_runs, task2_resets, total_theme_changes) 
-      VALUES (?, ?, ?, ?, ?) 
+      INSERT INTO participants (
+        survey_id, task2_time_sec, task2_runs, task2_resets, 
+        task2_theme_changes, task2_status
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?) 
       ON CONFLICT(survey_id) DO UPDATE SET 
         task2_time_sec = excluded.task2_time_sec, 
         task2_runs = excluded.task2_runs, 
         task2_resets = excluded.task2_resets,
-        total_theme_changes = COALESCE(participants.total_theme_changes, 0) + excluded.total_theme_changes
+        task2_theme_changes = excluded.task2_theme_changes,
+        task2_status = excluded.task2_status
     `);
 
-    stmt.run(surveyId, timeOnTask, runCount, resetCount, themeChangeCount);
+    stmt.run(surveyId, timeOnTask, runCount, resetCount, themeChangeCount, status);
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error in /api/log-task2:', error);
