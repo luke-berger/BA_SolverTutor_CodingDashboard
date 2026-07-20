@@ -11,7 +11,7 @@ export const handleProceedToSurvey = (surveyId: string, taskId: number) => {
         : 'https://limesurvey.imis.uni-luebeck.de/index.php/617713?lang=de';
 
     // redirect the user to the next survey with the encoded ID as a parameter
-    window.location.href = `${nextSurveyUrl}?p=${encodedId}`;
+    window.location.href = `${nextSurveyUrl}&p=${encodedId}`;
   } catch (error) {
     console.error('Error while redirecting to LimeSurvey:', error);
   }
