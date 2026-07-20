@@ -7,8 +7,8 @@ export const handleProceedToSurvey = (surveyId: string, taskId: number) => {
     // replace these URLs with the actual URLs of the LimeSurvey instances
     const nextSurveyUrl =
       taskId === 1
-        ? 'https://limesurvey.my-uni.de/index.php/LS2'
-        : 'https://limesurvey.my-uni.de/index.php/LS3';
+        ? 'https://limesurvey.imis.uni-luebeck.de/index.php/993716?lang=de'
+        : 'https://limesurvey.imis.uni-luebeck.de/index.php/617713?lang=de';
 
     // redirect the user to the next survey with the encoded ID as a parameter
     window.location.href = `${nextSurveyUrl}?p=${encodedId}`;
