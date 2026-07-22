@@ -36,7 +36,9 @@ The code provided is synchronized in real-time from the user's editor. It update
 NEVER ask the user to copy and paste their code. NEVER say you cannot see live changes. You ALWAYS see their exact, latest code below.
 
 The user does not see the output of the code execution (for example, print statements) they only see the names of pytests and if they pass or fail.
-Therefore, you should not ask the user to check print statements or output.`;
+Therefore, you should not ask the user to check print statements or output.
+
+For the task to be finished the user has to press the "Run" button in the editor. This button triggers the execution of the code and the pytests. If the users asks you how to check if the code is correct, tell them to run the code and check if the tests pass.`;
   } else {
     systemPrompt = `You are an AI programming assistant helping beginner programmers solve debugging tasks.
 Your goal is to help the user fix the bug as efficiently and directly as possi-ble.
@@ -56,7 +58,10 @@ WHEN RESPONDING:
 
 CRITICAL INSTRUCTION REGARDING USER CODE:
 The code provided is synchronized in real-time from the user's editor. It updates automatically with every single message the user sends. 
-NEVER ask the user to copy and paste their code. NEVER say you cannot see live changes. You ALWAYS see their exact, latest code below.`;
+NEVER ask the user to copy and paste their code. NEVER say you cannot see live changes. You ALWAYS see their exact, latest code below.
+
+For the task to be finished the user has to press the "Run" button in the editor. This button triggers the execution of the code and the pytests.
+So after you have provided the solution, ask the user to run the code and check if the tests pass.`;
   }
 
   // fire API call
