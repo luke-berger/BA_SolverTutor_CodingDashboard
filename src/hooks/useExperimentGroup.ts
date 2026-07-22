@@ -18,6 +18,7 @@ export const useExperimentGroup = () => {
     return newGroup;
   });
 
+  // function to reset the experiment group for testing purposes
   const resetExperiment = () => {
     localStorage.removeItem('experiment_group');
     window.location.reload();

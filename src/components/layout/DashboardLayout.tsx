@@ -20,7 +20,7 @@ const DashboardLayout: React.FC = () => {
     localStorage.setItem('solverTutorTheme', selectedTheme);
   }, [selectedTheme]);
 
-  const { group, resetExperiment } = useExperimentGroup();
+  const { group } = useExperimentGroup();
   const { taskId, surveyId } = useUrlParams();
   const [currentCode, setCurrentCode] = useState('');
 
@@ -52,14 +52,6 @@ const DashboardLayout: React.FC = () => {
         {/* AiChat only in Task 1 */}
         {taskId === 1 && <AiChat group={group} currentCode={currentCode} />}
       </div>
-
-      {/* Dev-Tool Button just for testing . Delete later */}
-      <button
-        onClick={resetExperiment}
-        className="absolute bottom-4 left-4 z-50 rounded bg-gray-700/50 px-3 py-1 text-xs text-white opacity-30 transition-opacity hover:opacity-100"
-      >
-        Reset Group (Current: {group}) | Task: {taskId}
-      </button>
     </div>
   );
 };
