@@ -13,7 +13,7 @@ interface TelemetryPayload {
   aiMessageCount?: number;
   chatHistory?: { role: string; content: string; codeSnapshot?: string }[];
   themeChangeCount?: number;
-  status: 'in_progress' | 'completed';
+  status: 'in_progress' | 'completed' | 'skipped';
 }
 
 // Global variables outside the hook so all component instances share the exact same counters
@@ -95,12 +95,32 @@ export const useTelemetry = () => {
   }, [syncToDatabase]);
 
   // Function to submit telemetry data to the backend
-  const submitTelemetry = async () => {
-    console.log(`submitting final telemetry from task ${taskId}...`);
+  const submitTelemetry = async (status: 'completed' | 'skipped' = 'completed') => {
+    console.log(`submitting ${status} telemetry from task ${taskId}...`);
 
-    // submit the final state and mark as completed
-    syncToDatabase(true);
-    console.log(`telemetry from task ${taskId} successfully submitted!`);
+    // submit the final state and mark as completed or skipped
+    const payload = {
+      surveyId,
+      timeOnTask: Math.floor((Date.now() - startTime) / 1000),
+      runCount: globalRunCount,
+      resetCount: globalResetCount,
+      themeChangeCount: globalThemeChangeCount,
+      status,
+    } as TelemetryPayload;
+
+    if (taskId === 1) {
+      payload.group = group;
+      payload.aiMessageCount = globalAiMessageCount;
+      payload.chatHistory = globalChatHistory;
+    }
+
+    const endpoint = taskId === 1 ? 'log-task1' : 'log-task2';
+
+    submitTelemetryData(endpoint, payload).catch((error) => {
+      console.error(`Background sync failed for task ${taskId}:`, error);
+    });
+
+    console.log(`telemetry from task ${taskId} successfully submitted as ${status}!`);
 
     // reset global variables for the next task
     globalRunCount = 0;
