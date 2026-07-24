@@ -49,7 +49,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
 
     const timer = window.setTimeout(() => {
       setSkipEnabled(true);
-    }, 60000);
+    }, 100000);
 
     return () => window.clearTimeout(timer);
   }, [isTask2]);
